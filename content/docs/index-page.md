@@ -34,4 +34,5 @@ I’m a full‑stack developer with 7+ years of experience building mobile apps.
 - CV: https://drive.google.com/file/d/1h_RTrOIQlP0Xc0-jUc0Q6-zgeKvnHcfS/view?usp=sharing
 - Facebook: https://www.facebook.com/hoangchungk53/
 - GitHub: https://github.com/hoangchungk53qx1
+- LinkedIn: https://www.linkedin.com/in/hoangchungk53qx1/
 
