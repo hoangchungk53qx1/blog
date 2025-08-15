@@ -9,6 +9,8 @@ toc: true
 weight: 999
 ---
 
+# Tác giả : ChungHA (RxMobileTeam)
+
 # Suspend Function trung tâm trong Coroutine
 
 Đối với 1 lập trình viên Mobile nói chung, và Android nói riêng, trước đây đối với mình, RxJava, RxKotlin, RxAndroid nói chung Rx style và reactive là thứ gì đó tuyệt vời để asynchonous task

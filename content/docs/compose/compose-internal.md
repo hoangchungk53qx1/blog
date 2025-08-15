@@ -12,6 +12,7 @@ weight: 999
 # Hôm nay chúng ta sẽ tìm hiểu về Compose Compiler , Compose Runtime và Slot table trong Compose
 
 # Tác giả : ChungHA (RxMobileTeam)
+
 ## Compose Compiler, Runtime và Slot Table
 
 ## I. Giới thiệu
@@ -19,10 +20,10 @@ weight: 999
 Chúng ta sẽ tìm hiểu về Compose Runtime, một phần quan trọng trong việc xây dựng giao diện người dùng với Jetpack Compose. Compose Runtime quản lý cách mà các Composable được hiển thị và cập nhật trên
 giao diện người dùng. Nó sử dụng một cấu trúc gọi là "Slot Table" để theo dõi các Composable và trạng thái của chúng.
 
-Nói sơ qua lại 1 chút ve Compose 
+Nói sơ qua lại 1 chút ve Compose
 
 1 . Composable là gì?
-Composable là một hàm trong Jetpack Compose, cho phép bạn định nghĩa giao diện người dùng một cách declarative. 
+Composable là một hàm trong Jetpack Compose, cho phép bạn định nghĩa giao diện người dùng một cách declarative.
 Mỗi Composable có thể chứa các thành phần khác và có thể được kết hợp để tạo ra giao diện phức tạp.
 
 ví dụ :
@@ -57,7 +58,7 @@ Runtime hoàn thành kỳ công này bằng cách sử dụng các cấu trúc n
 Nhưng làm thế nào runtime đạt được điều này? Điều gì diễn ra bên dưới khiến nó trở nên mượt mà, hiệu quả, và quan trọng nhất, phản ứng nhanh đến vậy?
 
 - Tưởng tượng compose runtime luôn quan sát các Composable, như một người giám sát chăm chú theo dõi từng diễn viên trên sân khấu. Khi có thay đổi trong trạng thái, runtime sẽ xác định các Composable nào cần được cập nhật và thực hiện việc đó một cách hiệu quả.
-Vậy hiệu quả của việc này là gì? Runtime không chỉ giúp giao diện người dùng luôn được cập nhật mà còn giảm thiểu việc vẽ lại không cần thiết, từ đó cải thiện hiệu suất ứng dụng.
+  Vậy hiệu quả của việc này là gì? Runtime không chỉ giúp giao diện người dùng luôn được cập nhật mà còn giảm thiểu việc vẽ lại không cần thiết, từ đó cải thiện hiệu suất ứng dụng.
 
 Ví dụ dưới đây minh họa cách Compose Runtime hoạt động với Slot Table:
 
@@ -66,12 +67,12 @@ var saySomething by remember { mutableStateOf("") }
 ```
 
 - Trong ví dụ này, `saySomething` là một biến trạng thái được quản lý bởi Compose Runtime. Khi giá trị của `saySomething` thay đổi, Compose Runtime sẽ xác định các Composable nào phụ thuộc vào biến này và cập nhật nó0.
-remember là gì? `remember` là một hàm trong Compose Runtime, cho phép bạn lưu trữ trạng thái trong một Composable. Khi Composable được gọi lại, giá trị của `saySomething` sẽ được giữ nguyên, giúp tránh việc tạo lại giá trị mỗi lần Composable được vẽ lại.
-Đó là cách chúng ta đang hiểu đơn thuần về remember, nhưng thực tế nó là một phần của Compose Runtime
-- Bên trong, nó không chỉ đơn thuần lưu giữ giá trị; nó còn liên kết giá trị đó với một slot, một vị trí bộ nhớ mà Compose sử dụng để theo dõi trạng thái qua các lần recomposition. 
+  remember là gì? `remember` là một hàm trong Compose Runtime, cho phép bạn lưu trữ trạng thái trong một Composable. Khi Composable được gọi lại, giá trị của `saySomething` sẽ được giữ nguyên, giúp tránh việc tạo lại giá trị mỗi lần Composable được vẽ lại.
+  Đó là cách chúng ta đang hiểu đơn thuần về remember, nhưng thực tế nó là một phần của Compose Runtime
+- Bên trong, nó không chỉ đơn thuần lưu giữ giá trị; nó còn liên kết giá trị đó với một slot, một vị trí bộ nhớ mà Compose sử dụng để theo dõi trạng thái qua các lần recomposition.
 - Khi trạng thái không thay đổi, runtime không cần tạo lại; nó chỉ đơn giản tái sử dụng vị trí bộ nhớ đang lưu giữ giá trị đó.
 - Điều này giúp giảm thiểu việc sử dụng bộ nhớ và tăng hiệu suất, vì không cần phải tạo lại các đối tượng không cần thiết.
-Chúng ta sẽ tìm hiểu remember internals :
+  Chúng ta sẽ tìm hiểu remember internals :
 
 
 ```
@@ -95,11 +96,11 @@ inline fun <T> cache(invalid: Boolean, block: () -> T): T {
 }
 ```
 
-Đúng là `Talk is cheap, show me the code!` 
+Đúng là `Talk is cheap, show me the code!`
 - Trong đoạn mã trên, `remember` sử dụng `currentComposer.cache` để lưu trữ giá trị của `saySomething`.
 - Nếu giá trị đã được lưu trữ trước đó và không thay đổi, Compose Runtime sẽ sử dụng lại giá trị đó mà không cần tạo lại.
 - Nếu giá trị thay đổi, nó sẽ gọi `calculation` để tính toán giá trị mới và cập nhật slot tương ứng trong Slot Table.
-Hiểu đơn giản : cache đảm bảo rằng giá trị được lưu trữ trong một vị trí bộ nhớ cụ thể. Nếu trạng thái không thay đổi, vị trí đó vẫn giữ nguyên. Nếu có thay đổi, vị trí đó được cập nhật
+  Hiểu đơn giản : cache đảm bảo rằng giá trị được lưu trữ trong một vị trí bộ nhớ cụ thể. Nếu trạng thái không thay đổi, vị trí đó vẫn giữ nguyên. Nếu có thay đổi, vị trí đó được cập nhật
 
 ### Slot Table: Cấu trúc dữ liệu của Compose Runtime
 
@@ -108,22 +109,22 @@ Nó hoạt động như một bảng, trong đó mỗi hàng đại diện cho m
 Mỗi Composable được ánh xạ đến một slot trong Slot Table, và mỗi slot có thể chứa một Composable hoặc một giá trị trạng thái.
 
 
- {{< figure src="../slot_table.png" alt="Open Ad" width="500px">}}
+{{< figure src="../slot_table.png" alt="Open Ad" width="500px">}}
 
 Đây không phải là một cấu trúc dữ liệu bình thường, nó là bí mật của Compose
 
 - Nó sẽ ghi chép bộ nhớ có cấu trúc dạng Tree, được tối ưu hóa cao, ghi lại nơi mỗi phần của giao diện người dùng đã tồn tại và sẽ tồn tại trong quá trình recomposition.
 - Cấu trúc dạng Tree này rất hữu ích vì nó phản ánh cây phân cấp UI, cho phép cập nhật hiệu quả các phần cụ thể của cây UI.
 
-Vậy điều này hoạt động như thế nào? 
+Vậy điều này hoạt động như thế nào?
 
-- Khi một composable được thực thi lần đầu tiên, Compose Runtime duyệt qua nó, save các slot trong SlotTable. 
-- Những slot này nắm bắt mọi thứ từ các tham số đến các giá trị trạng thái đã ghi nhớ và cả các SideEffect. 
+- Khi một composable được thực thi lần đầu tiên, Compose Runtime duyệt qua nó, save các slot trong SlotTable.
+- Những slot này nắm bắt mọi thứ từ các tham số đến các giá trị trạng thái đã ghi nhớ và cả các SideEffect.
 - Sau đó, khi đến thời điểm recomposition, nó xem lại những slot này — không phải để rebuild mà để reuse hoặc bỏ qua hoặc cập nhật
 
 Vậy Slot trong Slot Table là gì?
 - Mỗi slot trong Slot Table đại diện cho một Composable hoặc một giá trị trạng thái.
-- Một slot là một biểu diễn trừu tượng của một vị trí trong cây composition. 
+- Một slot là một biểu diễn trừu tượng của một vị trí trong cây composition.
 - Mỗi slot lưu trữ dữ liệu có thể là một remembered value, một groups Slot, hoặc Nothing :pray
 
 Tóm lại : Một chuỗi các slot được group lại thành 1 group lớn, khi Compose thực hiện recomposition, nó sẽ duyệt qua các slot này và quyết định xem có cần cập nhật hay không, và thực hiện chính xác các cập nhật cần thiết.
@@ -192,8 +193,8 @@ internal class SlotTable : CompositionData, Iterable<CompositionGroup> {
 }
 ```
 - Chúng ta thấy rằng, nó không dùng Data Class mà dùng Array để lưu trữ các slot,
-việc này giúp tăng hiệu suất và giảm overhead của việc sử dụng các đối tượng phức tạp.
-nó là flat array thì khi đó các thao tác insert, hay read sẽ nhanh,  O(1) hoặc gần như O(1)
+  việc này giúp tăng hiệu suất và giảm overhead của việc sử dụng các đối tượng phức tạp.
+  nó là flat array thì khi đó các thao tác insert, hay read sẽ nhanh,  O(1) hoặc gần như O(1)
 - Mỗi group trong groups array giúp Compose xác định vị trí và nội dung của một composable.
 - Khi recomposition xảy ra, nó sẽ xác định xem các group này đã được move đi hay chưa, hay remembered value đã thay đổi hay chưa, còn valid không, hay Empty không,
 - Nếu xác định rằng một group đã bị move đi, nó sẽ cập nhật các slot tương ứng trong Slot Table.
@@ -279,7 +280,7 @@ internal class Anchor(loc: Int) {
 ```
 
 Những anchor này, được gắn với các group ID, cho phép Compose duy trì tham chiếu đến các group cụ thể ngay cả khi table thay đổi trong quá trình recomposition,
-đảm bảo tính ổn định và hiệu quả trong quá trình cập nhật UI. 
+đảm bảo tính ổn định và hiệu quả trong quá trình cập nhật UI.
 Đây là cách để theo dõi vị trí cụ thể của một composable trong slot table.
 
 Tóm lại :
@@ -287,7 +288,7 @@ SlotTable là thứ cho phép Compose:
 - Tái sử dụng chính xác các vị trí bộ nhớ cho các giá trị như remember qua các lần recomposition.
 - Bỏ qua toàn bộ các phần của tree composition khi các đầu vào không thay đổi.
 - Khôi phục UI hiệu quả sau các thay đổi cấu hình hoặc bỏ qua recomposition.
-- Nếu không có SlotTable, Compose sẽ phải chạy lại mọi composable, khởi tạo lại mọi trạng thái, và khởi chạy lại mọi side effect. 
+- Nếu không có SlotTable, Compose sẽ phải chạy lại mọi composable, khởi tạo lại mọi trạng thái, và khởi chạy lại mọi side effect.
 
 Và khi độ phức tạp của UI tăng lên, Compose cần các cách để duy trì hiệu quả. Đây là lúc Group Introspection và Anchor Stability phát huy tác dụng.
 - Group Introspection cho phép Compose kiểm tra cấu trúc của một nhóm composition mà không cần chạy lại mã của nó.
@@ -323,14 +324,14 @@ LazyColumn {
 }
 ```
 
-==> Đã xong về Slot Table, Slot Reuse và Compose Runtime, vậy câu hỏi đặt ra là 
+==> Đã xong về Slot Table, Slot Reuse và Compose Runtime, vậy câu hỏi đặt ra là
 Sao nó biết được khi nào cần cập nhật UI, khi nào không cần cập nhật UI, và làm thế nào để tránh việc vẽ lại không cần thiết?
 thì lúc đó là Recomposer sẽ vào cuộc
 
 ### Recomposer
 SlotTable — lưu trữ của state.
 - Recomposer là một phần của Compose Runtime, chịu trách nhiệm xác định khi nào cần cập nhật giao diện người dùng.
-- Recomposer chịu trách nhiệm điều khiển các thay đổi thông qua composition dựa trên những thay đổi trạng thái hoặc các trigger bên ngoài (như LaunchedEffect, mutableStateOf, hoặc snapshotFlow). 
+- Recomposer chịu trách nhiệm điều khiển các thay đổi thông qua composition dựa trên những thay đổi trạng thái hoặc các trigger bên ngoài (như LaunchedEffect, mutableStateOf, hoặc snapshotFlow).
 - Nhưng điều kỳ diệu nằm ở cách nó composition những thay đổi này đồng bộ với SlotTable, đơn giản là  sử dụng thuật toán duyệt Tree.
 
 
@@ -347,5 +348,5 @@ SlotTable — lưu trữ của state.
 Có thể hiểu Như vậy, Recomposer là 1 vòng lặp, nó nằm trong một vòng lặp coroutine, và chờ đợi nhữung thay đổi để loop qua.
 
 ## III. Kết luận
-Trên đây là cái nhìn tổng quan về Compose Runtime và Slot Table trong Jetpack Compose của bản thân mình. 
+Trên đây là cái nhìn tổng quan về Compose Runtime và Slot Table trong Jetpack Compose của bản thân mình.
 Cảm ơn mọi người đã đọc đến đây, nếu có gì sai sót mong mọi người góp ý để mình hoàn thiện hơn.
