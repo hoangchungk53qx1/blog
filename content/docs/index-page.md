@@ -1,6 +1,6 @@
 ---
 weight: 999
-title: "----"
+title: About Me
 description: ""
 icon: "article"
 date: "2025-08-15T14:48:44+07:00"
@@ -9,9 +9,11 @@ draft: false
 toc: true
 ---
 
-# About Me
+# Welcome to My Profile
 
 ![chung_avatar.png](chung_avatar.png)
+
+<img src="https://github.com/rx-mobile-team/profile/blob/master/assets/images/chung_avatar.png" alt="Hoàng Anh Chung" style="width: 500px; height: 500px; border-radius: 30%;" />
 
 Hi, I'm Hoàng Anh Chung (@hoangchungk53qx1).  
 
