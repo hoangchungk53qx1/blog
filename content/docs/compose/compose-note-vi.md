@@ -9,6 +9,8 @@ draft: true
 toc: true
 ---
 
+![Badge](https://hitscounter.dev/api/hit?url=https%3A%2F%2Fhoangchungk53qx1.github.io%2Fblog%2Fdocs%2Fcompose%2Fcompose-note-en%2F&label=Counter&icon=github&color=%23198754&message=&style=flat&tz=UTC)
+
 Compose
 
 a. Recomposition là gì? Khi nào diễn ra? Làm sao nhận biết và tối ưu recomposition không cần thiết?
