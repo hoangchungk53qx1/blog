@@ -9,6 +9,9 @@ draft: true
 toc: true
 ---
 
+![Badge](https://hitscounter.dev/api/hit?url=https%3A%2F%2Fhoangchungk53qx1.github.io%2Fblog%2Fdocs%2Fkotlin%2Fcoroutine-flow-mistake%2F&label=Counter&icon=github&color=%23198754&message=&style=flat&tz=UTC)
+
+
 ### **Xin chào mọi người, hôm nay mình xin nói về 1 số lỗi khi chúng ta làm việc với Kotlin CoroutineFlow**
 
 ### 1: Sử dụng sai vòng đời, gây lãng phí resource và crash app
