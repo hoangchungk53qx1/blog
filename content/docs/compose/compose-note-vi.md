@@ -1,11 +1,11 @@
 ---
 weight: 999
-title: "Strong Skipping & Lambda Memoization in Jetpack Compose  "
+title: "Compose Recomposition"
 description: ""
 icon: "article"
 date: "2025-08-21T17:45:43+07:00"
 lastmod: "2025-08-21T17:45:43+07:00"
-draft: false
+draft: true
 toc: true
 ---
 
