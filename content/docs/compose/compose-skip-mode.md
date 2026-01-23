@@ -1,11 +1,11 @@
 ---
 weight: 999
-title: "Compose Skip Mode"
+title: "Strong Skipping & Lambda Memoization"
 description: ""
 icon: "article"
 date: "2026-01-23T14:08:13+07:00"
 lastmod: "2026-01-23T14:08:13+07:00"
-draft: true
+draft: false
 toc: true
 ---
 
