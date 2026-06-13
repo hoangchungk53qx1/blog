@@ -70,6 +70,15 @@ _count  // backing storage - phần lưu trữ phía sau
 
 Macro sẽ tự sinh ra các accessor (`init`, `get`, `set`) và các peer property (`_count`, `$count`...) ngay tại thời điểm biên dịch. Nói cách khác, những thứ trước đây property wrapper làm "ẩn dưới capo" thì giờ macro làm một cách tường minh hơn ở compile time.
 
+> **Liên hệ với Kotlin một chút cho anh em Android dễ hình dung:**
+>
+> Nếu bạn quen Kotlin, có thể map khá sát như sau:
+>
+> - **Property Wrapper (cũ)** rất giống **property delegate** trong Kotlin — kiểu `val isPlaying by remember { ... }` hay `var x by Delegates.observable(...)`. Cả hai đều bọc một giá trị lại và chèn logic `get`/`set` vào lúc **runtime**.
+> - **Macro (mới)** thì giống với **compiler plugin / KSP (Kotlin Symbol Processing)** hơn — code được **sinh ra ngay tại compile time**. Bạn viết `@State`, compiler "nở" (expand) nó ra thành các accessor và backing field thật, y như cách KSP sinh code cho Room, Moshi, hay cách `@Composable` được Compose compiler plugin biến đổi.
+>
+> Và điểm hay ho nhất — phần lazy initialization mình sắp nói tới — cũng có một "người anh em" rất quen thuộc bên Kotlin: từ khoá `by lazy { ... }`. Tinh thần giống hệt: **chỉ khởi tạo đúng một lần, vào lần truy cập đầu tiên, thay vì chạy đi chạy lại.**
+
 ## Cải tiến lớn nhất: Lazy Initialization (khởi tạo lười)
 
 Đây mới là phần đáng giá nhất của thay đổi này.
