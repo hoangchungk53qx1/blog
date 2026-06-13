@@ -9,7 +9,7 @@ toc: true
 weight: 999
 ---
 
-# Tác giả : ChungHA (RxMobileTeam)
+# Tác giả : ChungHA 
 
 # WWDC27 có gì thay đổi: `@State` giờ đây là một Macro
 
@@ -279,5 +279,3 @@ Những điều cần nhớ:
 Một thay đổi nhỏ trên slide WWDC, nhưng lại gỡ bỏ được một trong những "workaround" mệt mỏi nhất khi làm việc với `@Observable`. Đôi khi những cải tiến đáng giá nhất lại là những thứ âm thầm như vậy.
 
 ---
-
-*Bài viết tham khảo ý tưởng từ [SwiftUI's @State is now a macro - livsycode.com](https://livsycode.com/swiftui/swiftuis-state-is-now-a-macro/).*
