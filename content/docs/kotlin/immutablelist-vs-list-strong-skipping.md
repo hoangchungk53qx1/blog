@@ -175,5 +175,3 @@ Mấy ý cần nhớ:
 Triết lý cuối cùng nghe rất đời: **đừng tối ưu non.** Đừng mặc định cứ `ImmutableList` là bắt buộc cho hiệu năng Compose. Cứ **profile** đàng hoàng, thấy bottleneck thật rồi mới tối ưu đúng chỗ. Như tác giả bài gốc nói: *"Thấy bottleneck thật rồi tối ưu là vừa đẹp."*
 
 ---
-
-*Bài viết tham khảo ý tưởng từ [ImmutableList vs. List in Jetpack Compose — dev.to/brian_stark_09127](https://dev.to/brian_stark_09127/immutablelist-vs-list-in-jetpack-compose-rethinking-best-practice-after-strong-skipping-mode-55p0).*

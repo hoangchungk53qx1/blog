@@ -79,7 +79,7 @@ Macro sẽ tự sinh ra các accessor (`init`, `get`, `set`) và các peer prope
 >
 > Và điểm hay ho nhất — phần lazy initialization mình sắp nói tới — cũng có một "người anh em" rất quen thuộc bên Kotlin: từ khoá `by lazy { ... }`. Tinh thần giống hệt: **chỉ khởi tạo đúng một lần, vào lần truy cập đầu tiên, thay vì chạy đi chạy lại.**
 
-## Cải tiến lớn nhất: Lazy Initialization (khởi tạo lười)
+## Cải tiến lớn nhất: Lazy Initialization 
 
 Đây mới là phần đáng giá nhất của thay đổi này.
 
