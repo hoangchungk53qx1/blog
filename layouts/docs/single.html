@@ -1,9 +1,45 @@
 {{ define "main" }}
     <!-- override Prism's default copy messages to 'empty'. Required by CSS styling.
          see: https://prismjs.com/plugins/copy-to-clipboard/#styling -->
+    {{/* Lượt đọc bài viết (CounterAPI.dev) */}}
+    {{ $viewKey := replaceRE "[^a-zA-Z0-9]+" "-" (strings.Trim .RelPermalink "/") | lower }}
+    {{ if not $viewKey }}{{ $viewKey = "home" }}{{ end }}
+    <div class="post-views text-muted" data-view-key="{{ $viewKey }}"
+         style="font-size:0.9rem;margin-bottom:1rem;display:flex;align-items:center;gap:.35rem;">
+        <span aria-hidden="true">👁️</span>
+        <span class="post-views-count">…</span>
+        <span>lượt đọc</span>
+    </div>
+
     <div data-prismjs-copy="" data-prismjs-copy-success="" data-prismjs-copy-error="">
         {{ .Content }}
     </div>
+
+    <script>
+    (function () {
+        var el = document.querySelector('.post-views[data-view-key]');
+        if (!el) return;
+        var key = el.getAttribute('data-view-key');
+        var out = el.querySelector('.post-views-count');
+        var ns = 'chungha-blog';
+        var base = 'https://api.counterapi.dev/v1/' + ns + '/' + encodeURIComponent(key);
+        // F5 trong cùng phiên thì chỉ đọc lại số, không cộng thêm lượt.
+        var seen = false;
+        try { seen = sessionStorage.getItem('pv:' + key) === '1'; } catch (e) {}
+        var url = seen ? (base + '/') : (base + '/up');
+        fetch(url)
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+                if (d && typeof d.count === 'number') {
+                    out.textContent = d.count.toLocaleString('vi-VN');
+                    try { sessionStorage.setItem('pv:' + key, '1'); } catch (e) {}
+                } else {
+                    out.textContent = '—';
+                }
+            })
+            .catch(function () { out.textContent = '—'; });
+    })();
+    </script>
 
     {{ if and .GitInfo .Site.Params.docs.repoURL -}}
         {{ partial (printf "%s/%s" ($.Scratch.Get "pathName") "gitinfo") . }}
