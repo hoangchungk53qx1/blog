@@ -2,8 +2,8 @@
 title: "ImmutableList vs List trong Jetpack Compose"
 description: "Nghĩ lại về best practice sau khi có Strong Skipping Mode"
 icon: "article"
-date: "2026-06-13T10:00:00+07:00"
-lastmod: "2026-06-13T10:00:00+07:00"
+date: "2026-06-17T10:00:00+07:00"
+lastmod: "2026-06-17T10:00:00+07:00"
 draft: false
 toc: true
 weight: 999
@@ -15,11 +15,11 @@ weight: 999
 
 Anh em nào làm Compose lâu lâu một chút chắc đều thuộc nằm lòng câu này: "Muốn composable skip recomposition thì đừng có truyền `List<T>` vào, phải xài `ImmutableList<T>` của `kotlinx` cơ."
 
-Câu đó không sai, ít nhất là ở thời điểm nó ra đời. Nhưng từ ngày **Strong Skipping Mode** được bật mặc định, cái nền móng phía sau lời khuyên này đã khác đi rồi. Vậy nên hôm nay mình muốn ngồi lại, soi từng trường hợp một xem `ImmutableList` có còn là thứ "bắt buộc phải có" nữa hay không.
+Câu đó không sai, ít nhất là ở thời điểm nó ra đời. Nhưng từ ngày **Strong Skipping Mode** được bật mặc định,thì lời khuyên này đã khác đi rồi. Vậy nên hôm nay mình muốn ngồi lại, soi từng trường hợp một xem `ImmutableList` có còn là thứ "bắt buộc phải có" nữa hay không.
 
-Trong bài này mình sẽ bóc tách 3 tình huống cụ thể, kèm theo chi phí thật sự mà mỗi lựa chọn phải trả. Đi thôi.
+Trong bài này mình sẽ bóc tách 3 tình huống cụ thể, kèm theo cost thật sự mà mỗi lựa chọn phải trả. 
 
-## Ôn lại một chút: ngày xưa vì sao cứ phải ImmutableList?
+## Peter check lại tí: ngày xưa vì sao cứ phải ImmutableList?
 
 Trong Compose, một composable chỉ **skip** được (tức bỏ qua recomposition) khi tất cả tham số của nó vừa **stable** vừa **không đổi**.
 
@@ -36,7 +36,7 @@ fun MyList(items: List<Item>) {
 }
 ```
 
-Chỉ cần đúng một tham số unstable thôi là cả composable mất luôn khả năng skip. Thế là người ta nghĩ ra cách xài kiểu dữ liệu có cam kết bất biến hẳn hoi:
+Chỉ cần đúng một tham số unstable thôi là cả composable mất luôn khả năng skip. Thế là người ta nghĩ ra cách xài kiểu dữ liệu có commit immutable kotlinx
 
 ```kotlin
 import kotlinx.collections.immutable.ImmutableList
@@ -62,15 +62,15 @@ MyList(items = viewModelItems.toImmutableList())
 Nói ngắn gọn thế này: hồi trước chỉ cần dính **một** tham số unstable là composable mất quyền skip. **Strong Skipping Mode** đổi luôn cái luật đó:
 
 - Restartable composable **vẫn skip được** kể cả khi nhận tham số unstable.
-- Compose giờ tin vào việc **so sánh lúc runtime** nhiều hơn, thay vì đoán mò một cách bảo thủ ngay từ compile time.
+- Compose giờ tin vào việc **compare lúc runtime** nhiều hơn, thay vì đoán mò một cách bảo thủ ngay từ compile time.
 
-Cụ thể là với tham số unstable (kiểu `List<T>`), Compose sẽ so bằng **instance equality** — tức so địa chỉ tham chiếu (`===`). Nếu vẫn là cùng một instance được truyền vào, composable cứ thế mà skip ngon lành.
+Cụ thể là với tham số unstable (kiểu `List<T>`), Compose sẽ so bằng **instance equality** — tức so ref (`===`). Nếu vẫn là cùng một instance được truyền vào, composable cứ thế mà skip ngon lành.
 
-Chính điều này khiến cái niềm tin cũ — "collection unstable là luôn luôn dở" — **không còn đúng trong mọi trường hợp nữa.** Và đây mới là cái lõi của cả bài viết hôm nay.
+Chính điều này khiến cái niềm tin cũ — "collection unstable là luôn luôn dở" — **không còn đúng trong mọi trường hợp nữa.** Và đây mới là cái chính của cả bài viết hôm nay.
 
-## Soi từng trường hợp một
+## Từng case như sau
 
-Cho công bằng, mình xét cả hai theo đúng cách Compose vận hành:
+Cho công bằng, mình xét cả hai theo đúng cách Compose work:
 
 - **`List<T>`** → Compose so bằng **instance equality** (`===`), nhẹ tênh, O(1).
 - **`ImmutableList<T>`** → được coi là stable nên Compose so bằng **structural equality** (`equals()`), tốn O(N). Chưa kể còn phải trả thêm chi phí **convert** `toImmutableList()` cũng O(N) nữa.
@@ -90,9 +90,9 @@ MyList(items = items)
 
 **Chốt:** Cả hai đều skip. `ImmutableList` chẳng được lợi gì hơn, lại còn tốn thêm một lần convert (may là chỉ một lần nên cũng không đáng kể lắm). **Coi như hoà, nhưng nghiêng về `List`.**
 
-### Trường hợp 2: Instance đổi khi nội dung thật sự đổi
+### Trường hợp 2: Instance đổi khi content thật sự đổi
 
-Đây là kịch bản "lành mạnh" và hay gặp nhất: nội dung đổi thì sinh list mới, nội dung y nguyên thì giữ instance cũ.
+Đây là kịch bản "lành mạnh, hay gặp" và hay gặp nhất: content đổi thì sinh list mới, nội dung y nguyên thì giữ instance cũ.
 
 ```kotlin
 // Chỉ khi data thật sự đổi mới đẻ ra list mới
@@ -103,7 +103,7 @@ MyList(items = items)
 - `List<T>`: instance đổi → `===` sai → recompose (đúng ý mình vì nội dung đã khác thật). Chi phí O(1).
 - `ImmutableList<T>`: phải convert O(N) + so `equals()` O(N), rồi rốt cuộc **vẫn phải recompose** vì nội dung khác thật mà.
 
-**Chốt:** Recompose ở đây là việc bắt buộc rồi. `ImmutableList` chỉ tốn thêm convert với so structural O(N) — **toàn bộ là công cốc.** `List<T>` thắng đậm.
+**Chốt:** Recompose ở đây là việc bắt buộc rồi. `ImmutableList` chỉ tốn thêm convert với so structural O(N) — **toàn bộ là công cốc.** `List<T>` vân win.
 
 ### Trường hợp 3: Nội dung KHÔNG đổi nhưng cứ liên tục đẻ instance mới
 
@@ -123,7 +123,7 @@ fun Screen(state: UiState) {
 
 Nhưng — và cái "nhưng" này quan trọng lắm:
 
-- Bạn vẫn phải trả chi phí **convert** O(N) + so `equals()` O(N) mỗi lần.
+- Bạn vẫn phải mất công **convert** O(N) + so `equals()` O(N) mỗi lần.
 - Nếu composable con là **lazy** (kiểu `LazyColumn`), thì khối lượng việc vốn đã bị giới hạn trong vùng đang nhìn thấy rồi, nên cái lợi "skip phần trên" nhiều khi **không bõ** so với chi phí O(N) bỏ ra.
 
 ```kotlin
@@ -147,6 +147,7 @@ val items: StateFlow<List<Item>> =
 Hoặc đơn giản hơn, cứ `remember` với đúng key để khỏi map lại vô cớ:
 
 ```kotlin
+// nhưng ít khi
 val uiItems = remember(state.rawItems) { state.rawItems.map { it.toUi() } }
 ```
 
@@ -172,6 +173,6 @@ Mấy ý cần nhớ:
 4. Với `LazyColumn`, cái lợi của `ImmutableList` lại càng bé.
 5. Nếu bạn **đang** xài `ImmutableList` rồi thì cũng chẳng cần vội bỏ — nó không gây hại, chỉ là không còn bắt buộc thôi.
 
-Triết lý cuối cùng nghe rất đời: **đừng tối ưu non.** Đừng mặc định cứ `ImmutableList` là bắt buộc cho hiệu năng Compose. Cứ **profile** đàng hoàng, thấy bottleneck thật rồi mới tối ưu đúng chỗ. Như tác giả bài gốc nói: *"Thấy bottleneck thật rồi tối ưu là vừa đẹp."*
+Triết lý cuối cùng nghe rất đời: **đừng tối mù màu.** Đừng mặc định cứ `ImmutableList` là bắt buộc cho hiệu năng Compose. Cứ **profile** đàng hoàng, thấy bottleneck thật rồi mới tối ưu đúng chỗ nhses các bạn chẻ.
 
 ---
