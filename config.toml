@@ -1,3 +1,15 @@
+defaultContentLanguage = "vi"
+defaultContentLanguageInSubdir = false
+enableEmoji = true
+
+[languages]
+  [languages.vi]
+    languageName = "Tiếng Việt"
+    weight = 10
+  [languages.en]
+    languageName = "English"
+    weight = 20
+
 [module]
   [module.hugoVersion]
     extended = true

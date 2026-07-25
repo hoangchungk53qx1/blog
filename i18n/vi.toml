@@ -1,0 +1,38 @@
+[lang_select_title]
+    other = "Chọn ngôn ngữ"
+
+[search_title]
+    other = "Tìm kiếm"
+
+[search_navigate]
+    other = "để di chuyển"
+
+[search_select]
+    other = "để chọn"
+
+[search_close]
+    other = "để đóng"
+
+[search_cancel]
+    other = "huỷ"
+
+[search_no_results]
+    other = "Không có kết quả cho"
+
+[feedback_yes]
+    other = "Có"
+
+[feedback_no]
+    other = "Không"
+
+[feedback_helpful]
+    other = "Trang này có hữu ích không?"
+
+[feedback_submit]
+    other = "Gửi"
+
+[enable_light_mode]
+    other = "Bật chế độ sáng"
+
+[enable_dark_mode]
+    other = "Bật chế độ tối"
