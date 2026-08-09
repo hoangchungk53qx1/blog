@@ -14,18 +14,20 @@ weight: 999
 # Swift Concurrency (Phần 2): từ những idea tới các case thực tế triển khai từ đó.
 
  **Trước khi viết bài này mình đã đọc hết Swift-Evolution để biết các idea như nào, đọc hết mọi loại tài liệu tại sao Apple lại viết như thế và hướng tiếp theo Apple muốn làm là gì, và nếu bạn là Dev Android bạn có thể đọc bài suspend function hoạt động như thế nào trước khi đọc bài này của mình**
-Link : https://www.swift.org/swift-evolution/
-Link : https://speakerdeck.com/inamiy/iosdc-japan-2021?slide=124 , 1 Bài từ 2021 nhưng giá trị cực hay
+
+- Link : https://www.swift.org/swift-evolution/
+- Link : https://speakerdeck.com/inamiy/iosdc-japan-2021?slide=124 , 1 Bài từ 2021 nhưng giá trị cực hay
 
 **biết cú pháp không giống với hiểu hệ thống work như lào**. Tại sao compiler không cho truyền cái class này giữa các task? Tại sao một `actor` — vốn để bảo vệ state của mình — lại để state đổi ngay giữa method của chính mình? Tại sao chỉ một cái semaphore vô hại lại treo cả app? Chừng nào còn phải học thuộc câu trả lời theo từng case, Swift Concurrency vẫn cứ như một mớ luật rắc rối tùm lum. người mới học thì sẽ khóc mất.
 
 Luận điểm của bài này là: **Swift Concurrency đứng trên đúng một nhỏ các ý tưởng, và một khi nhìn ra chúng, những thứ "khó hiểu" thôi không còn khó hiểu nữa** — chúng biến thành các hệ quả mà bạn có thể tự suy ra. Mọi thứ hoạt động như thế đều có lý do, và lý do thì hiểu được.
 
-Có **4 ý tưởng chính mà mình thấy tâm đắc nhất khi đọc**: 
-(1) hàm thực sự chạy thế nào mà không cần chờ.
-(2) isolation thực chất là gì và actor thực sự bảo vệ cái gì.
-(3) `Sendable` chứng minh điều gì, và sao cần impl nó.
-(4) tại sao task có thể ở hai loại structured và unstructured.
+Có **4 ý tưởng chính mà mình thấy tâm đắc nhất khi đọc**:
+
+1. Hàm thực sự chạy thế nào mà không cần chờ.
+2. Isolation thực chất là gì và actor thực sự bảo vệ cái gì.
+3. `Sendable` chứng minh điều gì, và sao cần impl nó.
+4. Tại sao task có thể ở hai loại structured và unstructured.
 
  Mỗi ý tưởng kết thúc bằng một loạt **hệ quả**, và mỗi hệ quả là một tình huống thực từ code thật. Cả bài có 20 hệ quả, đánh số liên tục xuyên suốt.
 
@@ -38,12 +40,15 @@ Quên từ "await" đi một lát. **Không có gì trong Swift Concurrency th�
 **Thread là gì.** Một thread là một "người thợ" do hệ điều hành cung cấp. Nó thực thi lệnh lần lượt, theo thứ tự, và mỗi lúc chỉ làm được đúng một việc. CPU core là phần cứng thực sự chạy thread: một con chip 6 core chạy được 6 thread *cùng lúc*. Hệ điều hành có thể tạo nhiều thread hơn số core, gọi là OS Thread, nhưng khi đó nó phải xoay vòng đưa thread lên/xuống core, và mỗi thread thì **đắt**: nó cần vùng nhớ riêng, và OS tốn thêm công quản lý nữa. 
 
 --> Nó tốn kém, đắt đỏ --> Người ta mới phải làm sao rẻ đi...
+
 --> Bạn nào code Android chắc mình nói cái này nhiều lần lắm rồi. kể cả trong những buổi dạy và **Concurrency**
 
-**Ôn lại tí : Dữ liệu của function sống ở đâu: stack và heap.** 
-Một chương trình có hai loại bộ nhớ. 
-**Stack** thuộc về một thread: mỗi thread có đúng một cái. Khi một thread chạy một hàm, các biến cục bộ của hàm được đặt lên stack của thread đó, và bị xoá sạch ngay khi hàm return. Nhanh, nhưng có hai ràng buộc cứng: dữ liệu chết cùng hàm, và chỉ với tới được từ đúng một thread đó. 
-**Heap** thì ngược lại: một vùng dùng chung, không thuộc thread nào. Dữ liệu ở đó sống chừng nào còn có ai đó giữ tham chiếu tới nó, và thread nào cũng với tới được. Đây là nơi instance của class sống — đó là lý do một object có thể được truyền đi khắp nơi và sống lâu hơn cái hàm tạo ra nó.
+**Ôn lại tí : Dữ liệu của function sống ở đâu: stack và heap.**
+
+Một chương trình có hai loại bộ nhớ.
+
+- **Stack** thuộc về một thread: mỗi thread có đúng một cái. Khi một thread chạy một hàm, các biến cục bộ của hàm được đặt lên stack của thread đó, và bị xoá sạch ngay khi hàm return. Nhanh, nhưng có hai ràng buộc cứng: dữ liệu chết cùng hàm, và chỉ với tới được từ đúng một thread đó.
+- **Heap** thì ngược lại: một vùng dùng chung, không thuộc thread nào. Dữ liệu ở đó sống chừng nào còn có ai đó giữ tham chiếu tới nó, và thread nào cũng với tới được. Đây là nơi instance của class sống — đó là lý do một object có thể được truyền đi khắp nơi và sống lâu hơn cái hàm tạo ra nó.
 
 Một trường hợp kết hợp cả hai, cần nói rõ vì lát nữa sẽ dùng: **một biến cục bộ kiểu class**. 
 Viết `let session = NetworkSession()` bên trong một hàm, và dữ liệu tách làm hai. 
@@ -198,12 +203,14 @@ func update() async {
 }
 ```
 
-Một lock kiểu mutex *ghi nhớ* thread nào đã lock nó và mong `unlock` từ đúng thread đó. Chunk 2 có thể chạy trên thread khác, nên `unlock()` vi phạm đó, và tài liệu Apple nói thẳng kết quả: unlock một lock từ thread khác là **undefined behavior**. 
-Trong thực tế, "undefined" diễn ra thành một trong kiểu, từ tốt nhất tới tệ nhất. 
-**Tốt nhất:** runtime phát hiện unlock lạ và crash tiến trình ngay lập tức (`os_unfair_lock` làm vậy với thông báo rõ ràng). Khó chịu, nhưng bạn tìm ra bug ngay lần chạy test đầu.
- **Ở giữa:** internal của lock bị sai, và một `lock()` nào đó về sau dẫn tới, **deadlock vĩnh viễn**, thế là bạn đi debug nhầm chỗ. 
- **Tệ nhất:** nó âm thầm *có vẻ* chạy được trên máy bạn, phiên bản OS của bạn, đưa ra production -> sai theo một trong hai kiểu trên trên máy người khác. 
- Bug giờ vô hình trong code của bạn và không tài nào tái hiện trên máy bạn. 
+Một lock kiểu mutex *ghi nhớ* thread nào đã lock nó và mong `unlock` từ đúng thread đó. Chunk 2 có thể chạy trên thread khác, nên `unlock()` vi phạm đó, và tài liệu Apple nói thẳng kết quả: unlock một lock từ thread khác là **undefined behavior**.
+
+Trong thực tế, "undefined" diễn ra thành một trong kiểu, từ tốt nhất tới tệ nhất.
+
+- **Tốt nhất:** runtime phát hiện unlock lạ và crash tiến trình ngay lập tức (`os_unfair_lock` làm vậy với thông báo rõ ràng). Khó chịu, nhưng bạn tìm ra bug ngay lần chạy test đầu.
+- **Ở giữa:** internal của lock bị sai, và một `lock()` nào đó về sau dẫn tới, **deadlock vĩnh viễn**, thế là bạn đi debug nhầm chỗ.
+- **Tệ nhất:** nó âm thầm *có vẻ* chạy được trên máy bạn, phiên bản OS của bạn, đưa ra production -> sai theo một trong hai kiểu trên trên máy người khác. Bug giờ vô hình trong code của bạn và không tài nào tái hiện trên máy bạn.
+
 Độc lập với cả ba: trong lúc lock bị giữ qua suspension, mọi thread khác muốn nó đều bị block — mà đó tự nó đã là điều cấm. **Lock ổn trong code async, nhưng chỉ giữa hai `await`**
 
 **Vì sao "giữa hai `await`" lại ổn?** Vì đoạn nằm giữa hai `await` là **một chunk đồng bộ** — nó chạy trọn trên một thread, không bị cắt (không có `await` thì không có vết cắt). Nên `lock()` và `unlock()` chắc chắn cùng một thread, và lock cũng chỉ bị giữ trong tích tắc. Mẹo là: **`await` trước, rồi mới khoá — và trong vùng khoá tuyệt đối không để lọt một `await` nào**:
@@ -235,10 +242,8 @@ func loadSync() -> Data? {
 ```
 
 Semaphore là một blocking primitive: `wait()` chặn thread gọi cho tới khi ai đó gọi `signal()`.Ở đây là "khởi động việc async, block cho tới khi xong, trả kết quả một cách đồng bộ".
-Cái bẫy: nếu bản thân `loadSync` chạy trên một thread pool, thì `sem.wait()` rút thread pool đó ra.
-Gọi nó từ nhiều chỗ cùng lúc và **mọi** thread pool đều kẹt trong `wait()`.
-Các chunk của `load()` đã sẵn sàng chạy, nhưng chạy chúng cần một thread pool rảnh, mà chẳng còn cái nào, và pool **không thể tăng thêm** để cứu bạn. Không ai bao giờ chạm tới `signal()`.
-Trên máy 2 core, chỉ hai lời gọi đồng thời là đủ đóng băng mọi thứ.
+
+Cái bẫy: nếu bản thân `loadSync` chạy trên một thread pool, thì `sem.wait()` rút thread pool đó ra. Gọi nó từ nhiều chỗ cùng lúc và **mọi** thread pool đều kẹt trong `wait()`. Các chunk của `load()` đã sẵn sàng chạy, nhưng chạy chúng cần một thread pool rảnh, mà chẳng còn cái nào, và pool **không thể tăng thêm** để cứu bạn. Không ai bao giờ chạm tới `signal()`. Trên máy 2 core, chỉ hai lời gọi đồng thời là đủ đóng băng mọi thứ.
 Đây là kiểu **deadlock production phổ biến nhất** trong các codebase bắc cầu giữa concurrency cũ và mới theo cách này. (Một mẹo debug hữu ích: một biến môi trường có thể thu pool xuống còn đúng một thread trong test, khiến mọi vi phạm kiểu này tái hiện ngay tức khắc.)
 
 ![Sơ đồ deadlock semaphore](semaphore_deadlock.png "Mọi thread trong pool đều kẹt ở sem.wait(), nên chẳng còn thread rảnh nào chạy chunk của load() để gọi signal() — cả pool đứng hình, app treo.")
