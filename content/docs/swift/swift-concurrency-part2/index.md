@@ -1,5 +1,5 @@
  ---
-title: "Swift Concurrency (Phần 2): 4 ý tưởng dưới nắp capo và 20 hệ quả thực chiến"
+title: "Swift Concurrency (Phần 2), từ idea đến case thực tế"
 description: "Swift Concurrency đứng trên đúng 4 ý tưởng. Hiểu chúng rồi thì mọi thứ 'khó hiểu' trở thành hệ quả bạn tự suy ra được."
 icon: "article"
 date: "2026-08-02T00:30:00+07:00"
