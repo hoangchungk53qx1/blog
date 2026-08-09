@@ -1,193 +1,21 @@
 ---
-title: "Swift Concurrency (Phần 2): 4 ý tưởng dưới nắp capo và 20 hệ quả thực chiến"
-description: "Swift Concurrency đứng trên đúng 4 ý tưởng. Hiểu chúng rồi thì mọi thứ 'khó hiểu' trở thành hệ quả bạn tự suy ra được."
+title: "Swift Concurrency (Phần 3): Isolation, Sendable và cái cây Task"
+description: "Tiếp nối phần 2 — actor bảo vệ dữ liệu thế nào, Sendable chứng minh điều gì, và task sống trong hai thế giới."
 icon: "article"
-date: "2026-08-02T00:30:00+07:00"
-lastmod: "2026-08-02T00:30:00+07:00"
-draft: false
+date: "2026-08-09T10:00:00+07:00"
+lastmod: "2026-08-09T10:00:00+07:00"
+draft: true
 toc: true
 weight: 999
 ---
 
 # Tác giả : ChungHA
 
-# Swift Concurrency (Phần 2): 4 ý tưởng dưới nắp capo và 20 hệ quả thực chiến
+# Swift Concurrency (Phần 3): Isolation, Sendable và trê Task
 
-> Bài này mình dịch và biên soạn lại (sát nghĩa) từ bài viết rất hay của **Lev Litvak** — *"Swift Concurrency: From Ideas Under the Hood to Practical Consequences"*. Link gốc để ở cuối bài. Đây là phần 2, nối tiếp [phần 1](../swift-concurrency/) mình đã viết.
+Nhắc nhanh lại [phần 2](../swift-concurrency-part2/) cho ai chưa đọc: **Ý tưởng 1** — hàm `async` bị compiler cắt thành các **chunk** tại mỗi `await`, state sống trong **continuation** ở heap, và một **cooperative pool** nhỏ (cỡ một thread mỗi core) chạy bất cứ chunk nào sẵn sàng. Mình đã đi qua 5 hệ quả đầu tiên của mô hình đó.
 
-Phần lớn chúng ta đều đã dùng Swift Concurrency hiện đại, hoặc ít nhất là đã thử. Ta biết `async/await` làm code ngắn và phẳng hơn completion handler. Ta gắn `@MainActor` chỗ này chỗ kia, viết một hai cái `actor`, và bằng cách nào đó dẹp được mấy lỗi `Sendable` đi.
-
-Nhưng **biết cú pháp không giống với hiểu hệ thống**. Tại sao compiler không cho truyền cái class này giữa các task? Tại sao một `actor` — vốn để bảo vệ state của mình — lại để state đổi ngay giữa method của chính mình? Tại sao chỉ một cái semaphore vô hại lại treo cả app? Chừng nào còn phải học thuộc câu trả lời theo từng case, Swift Concurrency vẫn cứ như một mớ luật tuỳ tiện.
-
-Luận điểm của bài này là: **Swift Concurrency đứng trên đúng một nhúm nhỏ các ý tưởng, và một khi nhìn ra chúng, những thứ "khó hiểu" thôi không còn khó hiểu nữa** — chúng biến thành các hệ quả mà bạn có thể tự suy ra. Mọi thứ hoạt động như thế đều có lý do, và lý do thì hiểu được.
-
-Có **4 ý tưởng**: (1) hàm thực sự chạy thế nào mà không cần chờ, (2) isolation thực chất là gì và actor thực sự bảo vệ cái gì, (3) `Sendable` chứng minh điều gì và cho ai, và (4) tại sao task sống trong hai thế giới, một trong đó là một cái cây. Mỗi ý tưởng kết thúc bằng một loạt **hệ quả**, và mỗi hệ quả là một tình huống thực từ code thật. Cả bài có 20 hệ quả, đánh số liên tục xuyên suốt.
-
-Bắt đầu với ý tưởng đầu tiên, vì mọi thứ khác dựng trên nó.
-
-## Ý tưởng 1: Không có chuyện "chờ". Chỉ có một hàm bị cắt thành từng mảnh.
-
-Quên từ "await" đi một lát. **Không có gì trong Swift Concurrency thực sự "chờ" cả.** Để thấy điều gì thật sự xảy ra, ta cần hai mảnh kiến thức nền: thread là gì, và dữ liệu của một hàm sống ở đâu.
-
-**Thread là gì.** Một thread là một "người thợ" do hệ điều hành cung cấp. Nó thực thi lệnh lần lượt, theo thứ tự, và mỗi lúc chỉ làm được đúng một việc. CPU core là phần cứng thực sự chạy thread: một con chip 6 core chạy được 6 thread *cùng lúc*. Hệ điều hành có thể tạo nhiều thread hơn số core, nhưng khi đó nó phải xoay vòng đưa thread lên/xuống core, và mỗi thread thì **đắt**: nó cần vùng nhớ riêng, và OS tốn thêm công quản lý. Hãy nhớ cái giá này — nó là lý do toàn bộ mô hình bên dưới tồn tại.
-
-**Dữ liệu của hàm sống ở đâu: stack và heap.** Một chương trình có hai loại bộ nhớ. **Stack** thuộc về một thread: mỗi thread có đúng một cái. Khi một thread chạy một hàm, các biến cục bộ của hàm được đặt lên stack của thread đó, và bị xoá sạch ngay khi hàm return. Nhanh, nhưng có hai ràng buộc cứng: dữ liệu chết cùng hàm, và chỉ với tới được từ đúng một thread đó. **Heap** thì ngược lại: một vùng dùng chung, không thuộc thread nào. Dữ liệu ở đó sống chừng nào còn có ai đó giữ tham chiếu tới nó, và thread nào cũng với tới được. Đây là nơi instance của class sống — đó là lý do một object có thể được truyền đi khắp nơi và sống lâu hơn cái hàm tạo ra nó.
-
-Một trường hợp kết hợp cả hai, cần nói rõ vì lát nữa sẽ dùng: **một biến cục bộ kiểu class**. Viết `let session = NetworkSession()` bên trong một hàm, và dữ liệu tách làm hai. Bản thân object, với mọi property của nó, được tạo trong heap. Còn biến cục bộ `session` chỉ là một *tham chiếu* tới nó: một giá trị nhỏ (thực chất là địa chỉ của object trong bộ nhớ) nằm trên stack của thread như mọi biến cục bộ khác. Khi hàm return, tham chiếu trên stack bị xoá, nhưng object trong heap vẫn sống chừng nào còn ai khác giữ tham chiếu.
-
-> *Sơ đồ: Mỗi thread sở hữu một stack riêng chứa biến cục bộ của các hàm nó đang chạy. Heap là vùng dùng chung, không thuộc thread nào.*
-
-Ghi nhớ điểm khác biệt then chốt: **stack gắn với một thread và một hàm đang chạy, còn heap thì không gắn với cả hai.** Đúng một sự thật này giải thích gần hết phần còn lại của mục này.
-
-**Compiler làm gì với một hàm async.** Khi bạn viết một hàm `async`, compiler **cắt nó thành từng mảnh**. Đặt tên cho mỗi mảnh để dùng xuyên suốt bài: một **chunk** là một khối code đồng bộ (synchronous) liền mạch nằm giữa hai vết cắt. Vết cắt chỉ xảy ra tại `await`, không phải ở mọi dòng:
-
-```swift
-func loadAvatar() async throws -> UIImage {
-    let cacheKey = "avatar-key"                  // chunk 1
-    let url = try await fetchProfileURL()        // ← cắt: chunk 1 kết thúc bằng việc bắt đầu lời gọi,
-                                                 //        chunk 2 bắt đầu bằng việc nhận url
-    logger.log("got \(url)")                     // chunk 2
-    let data = try await download(url)           // ← vết cắt thứ hai
-    let image = decode(data)                     //
-    cache.store(image, for: cacheKey)            // ] chunk 3
-    return image                                 //
-}
-```
-
-Một chi tiết để khỏi nhầm về vị trí vết cắt: dòng có `await` được **chia sẻ** giữa hai chunk. Hành động cuối của chunk 1 là *bắt đầu* lời gọi `fetchProfileURL()`. Nếu kết quả chưa sẵn sàng ngay, vết cắt xảy ra tại đúng thời điểm đó. Hành động đầu của chunk 2 là *nhận* kết quả và đặt vào `url`. Vậy dòng `await` không "nằm ngoài" các chunk — nó là **ranh giới** giữa chúng.
-
-Giờ tới vấn đề. `url` được tạo ở chunk 1 nhưng dùng ở chunk 2. `cacheKey` tạo ở chunk 1 nhưng dùng còn muộn hơn, tận chunk 3. Giữa các chunk đó hàm **hoàn toàn không chạy**, và cái thread từng chạy chunk 1 không ngồi đó chờ: nó bỏ đi chạy code khác. Code khác đó cần chỗ trên stack, và nó lấy đúng chỗ mà chunk 1 đang dùng, ghi đè lên. Nên stack không thể mang gì qua khe hở đó, cùng lý do nó không mang được biến cục bộ của một hàm đã return: **stack thuộc về bất cứ thứ gì đang chạy ngay lúc này**. (Còn một lý do thứ hai nữa, các trang sau sẽ nói rõ: chunk sau khe hở thậm chí có thể không chạy trên cùng thread, mà một thread thì không với tới stack của thread khác.) Vì vậy compiler lưu các biến còn sống vào một object đặc biệt, và đặt object đó vào **heap** — vùng duy nhất sống sót qua mọi thứ và không thuộc thread nào.
-
-**Object đó chính là continuation.** Nói cho chính xác ai sống ở đâu: các biến (`url`, `cacheKey`) được lưu *bên trong* continuation, còn bản thân continuation là một object trong heap. Cái tên đến từ khoa học máy tính và mang nghĩa đen: continuation là "tất cả những gì còn phải làm tính từ điểm này trở đi". Về mặt vật lý nó rất giống một closure: một mẩu bộ nhớ chứa (a) các biến cục bộ đã lưu và (b) địa chỉ của đoạn code chạy tiếp theo, tức chunk kế. Khi kết quả `await` về, runtime lấy object này, đưa cho một thread, và thread nhảy tới địa chỉ đã lưu cùng các biến đã lưu. Hành động đó gọi là **resume** continuation. Chẳng có gì huyền bí: state đã lưu cộng với một cái "bookmark" nói "chạy tiếp từ đây".
-
-> *Sơ đồ: Một continuation = các biến đã lưu + địa chỉ chunk kế. Resume nghĩa là đưa nó cho scheduler chạy chunk 2 ở bất cứ đâu.*
-
-**Vậy sao lại gọi là "await" nếu chẳng có gì chờ?** Bởi vì *có* một thứ chờ thật: **dòng thời gian logic của chính hàm bạn**. Từ góc nhìn của code bạn viết, dòng tiếp theo thật sự không chạy cho tới khi có kết quả. Timeline logic của hàm tạm dừng tại đó. Thứ *không* chờ là **thread**. Cái tên mô tả góc nhìn từ bên trong hàm, không phải bộ máy bên dưới, và Swift thừa hưởng nó từ C# và JavaScript. Một cái tên thành thật hơn cho bộ máy sẽ là "suspension point" (điểm tạm dừng) — và đó đúng là thuật ngữ tài liệu chính thức của Swift dùng: *await đánh dấu một suspension point tiềm năng*. Tiềm năng, vì nếu kết quả tình cờ sẵn sàng ngay, thì chẳng cần cắt gì và hàm cứ chạy tiếp.
-
-**Ai chạy các chunk.** Swift Concurrency chạy chúng trên một **cooperative thread pool**: một nhóm thread do hệ thống tạo riêng để chạy chunk, xấp xỉ **một thread trên mỗi CPU core**, và con số đó **không bao giờ tăng thêm**. Một chiếc iPhone hiện đại có 6 core (con A19 Pro của iPhone 17 Pro: 2 performance + 4 efficiency), nên pool khoảng 6 thread. Đối lập với mô hình GCD cũ, nơi một thread bị block khiến hệ thống tạo thêm một cái nữa, rồi nữa, lên tới 64 thread — cái gọi là *thread explosion*, mỗi thread ngốn bộ nhớ và chi phí lập lịch của OS. Cooperative pool chọn thoả thuận ngược lại: số thread nhỏ và cố định, đổi lại **code của bạn tuyệt đối không được block một thread trong pool**. Không có gì cưỡng chế điều này cả: compiler vẫn cho bạn làm, runtime cũng không can thiệp. Giữ lời hứa đó là việc của bạn, và các hệ quả bên dưới là những gì xảy ra khi lời hứa bị phá.
-
-**Pool liên hệ thế nào với tất cả các thread khác.** Thread trong pool không phải phần cứng đặc biệt, cũng chẳng phải một loại thread riêng. Một app có nhiều thread: main thread (thread vẽ UI), ~6 thread của cooperative pool, cộng thêm thread do GCD tạo, do bộ máy networking, do thư viện bên thứ ba. Tất cả đều là thread OS bình thường, và OS scheduler rải hết chúng lên cùng 6 core vật lý. Vậy nên thread pool **không sở hữu** core. Cái làm chúng thành "pool" chỉ là công việc và luật của chúng: chúng là thread mà Swift Concurrency dùng để chạy chunk, và chúng tuân theo giao kèo "không bao giờ block". Main thread **không** nằm trong nhóm này: nó tồn tại riêng, chạy UI, và Swift Concurrency coi nó là một executor riêng biệt (điều này quan trọng ở mục sau, khi `@MainActor` xuất hiện).
-
-Lưu ý điều mà mô hình pool ngụ ý: **một hàm đang suspended không có "thread nhà"**. Nó không phải "đang tạm dừng trên thread 4, dự định quay lại đó". Khi suspended, nó là một object trong heap, và câu hỏi "nó thuộc thread nào" *không có câu trả lời*, y như với bất kỳ object nào khác trong heap. Không có thread affinity — theo thiết kế. (Main thread và `@MainActor` là ngoại lệ đặc biệt với luật riêng, sẽ nói kỹ ở mục sau.)
-
-> *Sơ đồ: Toàn bộ mô hình trên thiết bị 6 core — cắt tại mỗi await, state nằm trong continuation, thread rảnh nào cũng chạy được chunk kế tiếp.*
-
-Bốn câu hỏi tự nhiên trước khi đi tiếp.
-
-**Nếu số task nhiều hơn số thread thì sao?** Đó là trạng thái bình thường, không phải vấn đề. Một task đang suspended là object heap cỡ vài trăm byte, và nó **không chiếm thread nào cả**. Mười ngàn task trên sáu thread là chuyện thường: các chunk sẵn sàng nằm trong hàng đợi của scheduler, và thread nhặt lần lượt, ưu tiên cao trước. Để so sánh, một thread cần khoảng nửa megabyte stack cộng một chuyến vào kernel mỗi lần bị switch. Chính sự bất đối xứng này là toàn bộ lý do mô hình tồn tại: nhiều task suspended rẻ tiền, ghép lên vài thread đắt tiền.
-
-**6 thread nghĩa là mỗi lúc chỉ tải được 6 ảnh?** Không, và lý do làm rõ thread thực chất dùng để làm gì. Thread cần cho đúng một việc: **thực thi code**, tức chạy lệnh CPU. Chunk của hàm async chạy trên thread pool, nhưng "chạy code cần thread" đúng với *mọi* mẩu code trong hệ thống. Đây là một lượt tải, chú thích rõ chỗ nào thật sự xảy ra ở đâu:
-
-```swift
-func loadImage(_ url: URL) async throws -> UIImage {
-    let request = makeRequest(url)        // thread pool, chỉ một phần nghìn giây
-
-    let (data, _) = try await URLSession.shared.data(for: request)
-    // ← hàm suspend tại đây.
-    //   Trong lúc truyền dữ liệu (99% thời gian) KHÔNG có code nào chạy cho lượt tải này,
-    //   trên bất kỳ thread nào. Byte được chip mạng và OS chuyển đi.
-    //   Khi response sẵn sàng, code hệ thống chạy thoáng qua trên một trong các
-    //   "thread khác" ở sơ đồ trên và resume continuation của ta.
-
-    return decode(data)                   // lại thread pool: việc CPU thật sự
-}
-```
-
-Phần nghe lạ tai là "không có code nào chạy". Vậy *ai* đang chờ dữ liệu? Không ai cả, theo nghĩa đen. Hệ thống hiện đại không cài đặt "chờ" bằng cách để một thread đứng trong vòng lặp hỏi "xong chưa?". Chúng cài đặt nó như một cái **chuông cửa**. Yêu cầu được chuyển xuống OS rồi tới chip mạng — một thiết bị vật lý riêng, tự nó chuyển byte, không cần CPU thực thi gì. OS ghi chú "khi dữ liệu của request này về thì báo cho app", và cho tới khi chuông reo (một tín hiệu phần cứng gọi là *interrupt*), **không một lệnh nào** tốn cho lượt tải này.
-
-Vậy hạch toán cho 100 lượt tải đồng thời: dòng đầu và cuối của `loadImage` là những khoảnh khắc ngắn chạy code, còn phần truyền dữ liệu — chiếm gần như toàn bộ thời gian — tốn **0 thread và 0 CPU**. Đó là lý do cả 100 lượt truyền thật sự diễn ra song song. Thứ duy nhất bị chặn quanh mức 6 là **thực thi code đồng thời**: khi cả 100 ảnh về và cần decode, các chunk `decode(data)` sẽ chạy khoảng 6 cái một lúc. Và cái trần đó không phải điểm yếu của mô hình, nó là phần cứng: chip có 6 core, nên hơn 6 phép tính vốn dĩ không bao giờ chạy cùng một khoảnh khắc. Thêm thread cũng không tính nhanh hơn, chỉ khiến chúng thay phiên nhau trên cùng 6 core mà vẫn phải trả giá switch.
-
-**Còn một hàm trộn cả hai loại việc thì sao?**
-
-```swift
-func downloadAndPrepareData() async throws -> PreparedData {
-    let raw = try await network.fetch()   // vết cắt của riêng nó ở đây
-    return heavyDecode(raw)               // chunk của riêng nó: việc CPU thuần
-}
-
-// Phía người gọi chỉ thấy một await:
-let data = try await downloadAndPrepareData()
-```
-
-Từ phía người gọi chỉ có một `await`, và người gọi bị suspend suốt cả quãng thời gian đó. Nhưng một `await` đó chẳng nói gì về chuyện xảy ra bên trong. Bên trong `downloadAndPrepareData`, chính mô hình đó lặp lại một cách đệ quy: nó có vết cắt riêng tại `network.fetch()` và các chunk riêng. Chunk khởi động request chạy trên thread pool, rồi nó suspend để truyền dữ liệu (không thread, như ta vừa thấy), rồi chunk `heavyDecode` chiếm thật một thread pool, vì decode là việc CPU thuần. Vậy đúng như bạn đoán: một phần vòng đời của hàm này dùng thread pool, một phần không dùng gì, dù người gọi chỉ thấy một `await` liền mạch. **Await một hàm chỉ nghĩa là "timeline của tôi tạm dừng cho tới khi nó return".** Nó dùng bao nhiêu thread bên trong, và khi nào, do các vết cắt của chính nó quyết định.
-
-**Vậy khi nào thì hỏng?** Chỉ khi một chunk *đang ở trên* một thread mà từ chối nhả nó ra: block nó, hoặc chiếm nó lâu. Điều đó phá giao kèo của pool, và các hệ quả dưới đây đều là biến thể của đúng một vi phạm này, cộng vài hệ quả trực tiếp của chuyện "không có thread nhà".
-
-### Hệ quả 1. Sau await, bạn có thể tỉnh dậy trên một thread khác.
-
-```swift
-func report() async {
-    printCurrentThread()   // <NSThread: 0x...>{number = 4, ...}
-    try? await Task.sleep(for: .seconds(1))
-    printCurrentThread()   // <NSThread: 0x...>{number = 7, ...}
-}
-
-// Một helper đồng bộ, và nó cần thiết có chủ đích: xem lưu ý bên dưới.
-func printCurrentThread() {
-    print(Thread.current)
-}
-```
-
-Cùng một hàm, thread khác nhau, và đây là hành vi **đúng**: sau vết cắt, chunk kế đã tới bất cứ thread pool nào rảnh trước. Về cái helper — nó chứng minh luận điểm của mục này còn tốt hơn cả ví dụ: trong Swift 6 language mode, gọi `Thread.current` trực tiếp trong code async **không compile được**. Foundation đánh dấu nó không khả dụng từ ngữ cảnh async, chính vì câu trả lời có thể đổi tại mỗi `await` và ngôn ngữ từ chối cho bạn phụ thuộc vào nó. Hỏi qua một hàm đồng bộ chỉ là cách lách để demo thôi.
-
-Một lưu ý về mấy con số, vì chúng làm ai cũng bối rối: `number = 7` **không** nghĩa là có ít nhất 7 thread trong pool. Con số chỉ là một định danh giữa *tất cả* thread của tiến trình, và như đã thấy, một app đang chạy có rất nhiều thread ngoài pool. ~6 thread của pool mang bất cứ số nào chúng tình cờ nhận được. Ngoài ra, tỉnh dậy lại trên đúng thread cũ là *có thể*, nhưng đó là trùng hợp, không bao giờ là đảm bảo. Đây là lý do thread-local storage và mọi thứ đánh chỉ mục theo "thread hiện tại" **vỡ** khi qua `await`. (Một ngoại lệ: code isolated tới `@MainActor` *luôn* resume trên main thread. Đó không phải thread affinity lẻn về bằng cửa sau, đó là **isolation** — chủ đề của mục sau.)
-
-### Hệ quả 2. Đừng bao giờ giữ một lock qua await.
-
-```swift
-let lock = NSLock()
-
-func update() async {
-    lock.lock()
-    let value = await compute()   // cắt: chunk 2 có thể chạy trên thread khác
-    cache = value
-    lock.unlock()                 // có thể bị gọi từ một thread chưa từng lock
-}
-```
-
-Một lock kiểu mutex *ghi nhớ* thread nào đã lock nó và mong `unlock` từ đúng thread đó. Chunk 2 có thể chạy trên thread khác, nên `unlock()` vi phạm kỳ vọng đó, và tài liệu Apple nói thẳng kết quả: unlock một lock từ thread khác là **undefined behavior**. Trong thực tế, "undefined" diễn ra thành một trong ba kết cục, từ tốt nhất tới tệ nhất. **Tốt nhất:** runtime phát hiện unlock lạ và crash tiến trình ngay lập tức (`os_unfair_lock` làm vậy với thông báo rõ ràng). Khó chịu, nhưng bạn tìm ra bug ngay lần chạy test đầu. **Ở giữa:** bản ghi sở hữu nội bộ của lock bị hỏng, và một `lock()` nào đó về sau, trông vô hại, **deadlock vĩnh viễn**, thế là bạn đi debug nhầm chỗ. **Tệ nhất:** nó âm thầm *có vẻ* chạy được trên máy bạn, phiên bản OS của bạn, ship ra production, rồi hỏng theo một trong hai kiểu trên trên máy người khác. Bug giờ vô hình trong code của bạn và không tài nào tái hiện trên máy bạn. Và độc lập với cả ba: trong lúc lock bị giữ qua suspension, mọi thread khác muốn nó đều bị block — mà đó tự nó đã là điều cấm. **Lock ổn trong code async, nhưng chỉ giữa hai `await`, không bao giờ vắt qua một cái.**
-
-### Hệ quả 3. Một semaphore có thể treo cả app.
-
-```swift
-func loadSync() -> Data? {
-    let sem = DispatchSemaphore(value: 0)
-    var result: Data?
-    Task {
-        result = await load()
-        sem.signal()
-    }
-    sem.wait()   // block thread hiện tại cho tới khi signal() được gọi
-    return result
-}
-```
-
-Semaphore là một blocking primitive: `wait()` chặn thread gọi cho tới khi ai đó gọi `signal()`. Kế hoạch ở đây là "khởi động việc async, block cho tới khi xong, trả kết quả một cách đồng bộ". Cái bẫy: nếu bản thân `loadSync` chạy trên một thread pool, thì `sem.wait()` rút thread pool đó ra khỏi vòng phục vụ. Gọi nó từ đủ nhiều chỗ cùng lúc và **mọi** thread pool đều kẹt trong `wait()`. Các chunk của `load()` đã sẵn sàng chạy, nhưng chạy chúng cần một thread pool rảnh, mà chẳng còn cái nào, và pool **không thể tăng thêm** để cứu bạn. Không ai bao giờ chạm tới `signal()`. Trên máy 2 core, chỉ hai lời gọi đồng thời là đủ đóng băng mọi thứ. Đây là kiểu **deadlock production phổ biến nhất** trong các codebase bắc cầu giữa concurrency cũ và mới theo cách này. (Một mẹo debug hữu ích: một biến môi trường có thể thu pool xuống còn đúng một thread trong test, khiến mọi vi phạm kiểu này tái hiện ngay tức khắc.)
-
-### Hệ quả 4. Thread.sleep cướp một core, Task.sleep tốn 0 đồng.
-
-```swift
-Thread.sleep(forTimeInterval: 1)        // thread này bị chiếm để không làm gì trong 1s
-try await Task.sleep(for: .seconds(1))  // không thread nào bị dính trong 1s;
-                                        // một timer sẽ resume hàm
-```
-
-Trước hết, mỗi dòng làm gì. `Thread.sleep(forTimeInterval: 1)` bảo OS: cho *thread hiện tại* ngủ một giây. Thread không làm gì, nhưng vẫn **bị chiếm**: suốt cả giây đó nó không chạy được chunk của ai khác. `Task.sleep(for: .seconds(1))` suspend *hàm*, không phải thread nào: một vết cắt bình thường, continuation vào heap, cộng một ghi chú trong timer của scheduler "một giây nữa, đưa continuation này về lại hàng đợi sẵn sàng". Thread được nhả ra ngay tại vết cắt và dành cả giây đó chạy chunk của task khác, hoặc nghỉ nếu không có việc. Task đang ngủ tiêu tốn **0 thread-time**. Thread không "chờ để quay lại với nó", vì như mọi khi, chẳng có thread nào gắn với một hàm đang suspended cả.
-
-Vì sao đây là hệ quả của mô hình: pool có ~6 thread và không bao giờ thêm cái thứ bảy. Một thread kẹt trong `Thread.sleep` là, trong giây đó, một **core bị mất**: một phần sáu toàn bộ năng lực tính toán của app dành cho việc không làm gì. Nhìn từ ngoài, hai dòng trông y hệt ("code dừng một giây"), và đó chính là thứ làm dòng đầu nguy hiểm.
-
-### Hệ quả 5. Thứ tự thực thi giữa các task không được đảm bảo.
-
-```swift
-for i in 1...5 {
-    Task { print(i) }
-}
-// In 1...5 theo thứ tự bất kỳ.
-```
-
-Chunk ở đây nằm đâu? Mỗi thân `Task { }` tự nó được lập lịch như một chunk: tạo một task nghĩa là "bỏ code này vào hàng đợi của scheduler", và một thân không có `await` bên trong đơn giản là một task gồm đúng một chunk. Vậy năm thân task rơi vào scheduler, và thread nhặt chúng theo ưu tiên và độ sẵn sàng, **không hứa hẹn** tạo-trước-chạy-trước. Scheduler không phải serial queue: khác với `DispatchQueue.main.async` vốn đảm bảo thứ tự FIFO, `Task { }` chỉ đảm bảo code *sẽ* chạy, chứ không đảm bảo *khi nào* so với các anh em của nó. Nếu cần thứ tự, hãy lấy nó một cách tường minh: `await` từng phần việc lần lượt, hoặc đẩy chúng qua một `AsyncStream` (nó giao giá trị theo đúng thứ tự chúng được tạo ra).
-
-Một cảnh báo thực tế trước khi bạn tự chạy đoạn này, và nó minh hoạ rất hay chuyện đảm bảo thứ tự hẹp tới mức nào. Trong một project bật default của Swift 6.2 (xem Hệ quả 11), vòng lặp này nhiều khả năng nằm trong code của main actor, năm task khi đó được xếp hàng trên main actor theo thứ tự, và main actor chạy job theo đúng thứ tự chúng được xếp, nên bạn sẽ thấy 1 tới 5 gọn gàng. Đó là tính chất của **main actor**, không phải của `Task { }`. Chuyển đúng vòng lặp đó vào một actor của riêng bạn thì output gọn gàng biến mất, vì một lý do hay làm người ta sập bẫy: một `Task { }` viết bên trong method của actor chỉ *gia nhập* actor đó **nếu thân của nó chạm vào actor**. Ở đây thân chỉ là `print(i)`, chẳng chạm gì, nên không có gì để gắn vào và task đi thẳng ra pool, nơi không tồn tại thứ tự. Và ngay cả với task *thuộc về* một actor, lời hứa vẫn hẹp: actor đảm bảo các job của nó không bao giờ chồng lấn, chứ không đảm bảo thứ tự chạy, và nó có thể chạy job ưu tiên cao trước. Tóm lại, **actor không bao giờ hứa thứ tự, nên đừng bao giờ dựa vào một thứ tự nào.**
+Phần 3 này mở màn bằng **hệ quả cuối cùng của Ý tưởng 1**, rồi bước sang ba ý tưởng còn lại: **isolation** (Ý tưởng 2), **Sendable** (Ý tưởng 3), và **cái cây task** (Ý tưởng 4). Số hệ quả đánh tiếp từ phần 2, nên bắt đầu ngay từ Hệ quả 6.
 
 ### Hệ quả 6. withCheckedContinuation trao continuation vào tay bạn, kèm nghĩa vụ.
 
@@ -207,7 +35,7 @@ Compiler cắt `download` tại `await` như thường và tạo continuation: s
 
 Điều này biến luật "gọi resume đúng một lần" từ thứ phải học thuộc thành thứ bạn có thể tự suy ra. Gọi **không lần nào**, và object continuation nằm mãi trong heap: phần còn lại của `download` không bao giờ chạy, ai await `download` bị suspend vĩnh viễn, và mọi thứ continuation đang giữ đều bị leak. Gọi **hai lần**, và bạn đang bảo runtime chạy lại phần còn lại của một hàm đã resume rồi, thứ có thể làm hỏng dữ liệu chương trình. Biến thể `checked` bạn thấy ở trên làm thêm chút kiểm tra để bắt cả hai lỗi: nếu continuation bị vứt đi mà chưa từng resume, runtime log một cảnh báo; nếu nó bị resume lần thứ hai, runtime dừng chương trình bằng một fatal error có chủ đích thay vì cho phép dữ liệu hỏng. Chính sự bảo vệ đó là lý do `withCheckedContinuation` nên là lựa chọn mặc định thay cho người anh em `unchecked`, dù có chút overhead nhỏ.
 
-**Chốt lại.** Một mô hình: hàm bị cắt tại các `await`, state sống trong continuation ở heap, một pool thread nhỏ cố định chạy bất cứ chunk nào sẵn sàng. Mọi luật trong mục này (không block, không giữ lock qua `await`, không giả định về thread, resume đúng một lần) đều là mô hình này áp dụng, không phải một sự thật riêng lẻ phải nhớ. Điều mô hình *chưa* trả lời: nếu chunk nào cũng có thể chạy trên thread nào tại thời điểm nào, thì ai bảo vệ dữ liệu của bạn khỏi bị hai chunk chạm cùng lúc? Đó là **isolation**, ý tưởng tiếp theo.
+**Chốt lại.** Concurrency: hàm bị cắt tại các `await`, state sống trong continuation ở heap, một pool thread nhỏ cố định chạy bất cứ chunk nào sẵn sàng. Mọi luật trong mục này (không block, không giữ lock qua `await`, không giả định về thread, resume đúng một lần) đều là mô hình này áp dụng, không phải một sự thật riêng lẻ phải nhớ. Điều Concurrency *chưa* trả lời: nếu chunk nào cũng có thể chạy trên thread nào tại thời điểm nào, thì ai bảo vệ dữ liệu của bạn khỏi bị hai chunk chạm cùng lúc? Đó là **isolation**, ý tưởng tiếp theo.
 
 ## Ý tưởng 2: Isolation là quyền sở hữu dữ liệu, không phải điều khiển thread.
 
@@ -238,7 +66,7 @@ actor LikeCounter {
 
 Mọi thứ khai báo bên trong actor thuộc về domain của nó. Code bên ngoài thì không, nên nó không thể với tới `likes` theo kiểu với tới property của một class thường. Nó vẫn lấy được giá trị, nhưng chỉ bằng cách đi qua **cửa trước** của actor, với `await` — và ta sẽ thấy ngay cái cửa đó làm gì. Tới đây thì mới chỉ là một bộ nhãn dán lên code và dữ liệu. Phần thú vị là truy cập từ bên ngoài hoạt động ra sao: **actor đảm bảo mỗi lúc nhiều nhất một job chạy bên trong domain**. Một lời gọi từ ngoài trở thành một job trong hàng đợi của actor, các job vào từng cái một, và trong khi một cái đang bên trong, số còn lại xếp hàng chờ. Đây là lý do data race chết: chuỗi đọc-cộng-ghi không còn xen kẽ được với ai nữa, vì chẳng ai khác ở bên trong.
 
-> *Sơ đồ: Người gọi xếp hàng ở cửa. Mỗi lúc một job bên trong, nên không gì xen kẽ được với nó. Job bên trong vẫn chạy chunk của nó trên các thread pool bình thường.*
+![Sơ đồ isolation domain của actor](domain_actor.png "Người gọi xếp hàng ở cửa. Mỗi lúc một job bên trong, nên không gì xen kẽ được với nó. Job bên trong vẫn chạy chunk của nó trên các thread pool bình thường.")
 
 **Actor không phải là một thread.** Đây là hiểu nhầm phổ biến nhất, nên hãy mổ xẻ nó. Actor không sở hữu thread, không tạo thread, và method của nó không chạy "trên thread của actor", vì chẳng có cái thread nào như thế tồn tại. Actor chỉ là hai thứ: một hàng đợi ở cửa, và luật "một job bên trong". Cái job đang ở bên trong chạy các chunk của nó trên chính cooperative pool từ Ý tưởng 1, trên bất cứ thread nào rảnh. Mười ngàn actor trên 6 thread vẫn ổn, cùng lý do mười ngàn task vẫn ổn: một actor mà cửa không có ai xếp hàng chỉ là một object trong heap, chẳng tốn thread nào.
 
@@ -542,7 +370,7 @@ public struct SearchFilters: ~Sendable {
 }                           // nhưng tác giả nói: đừng dựa vào điều đó
 ```
 
-`~Sendable` nghĩa là: kiểu này đã được xét, và nó *không được* conform. Nó làm gì về mặt cơ chế thì tuỳ nơi kiểu sống, và đây là chỗ phân đôi public/non-public từ Bằng chứng một quay lại. Với một value type **non-public**, `~Sendable` tắt cái conformance tự động (cái mà compiler cấp khi mọi thành viên đều `Sendable`): không có marker thì kiểu sẽ là `Sendable`, có nó thì không. Với một kiểu **public**, như ở đây, cái conformance tự động đó *chưa từng tồn tại*, nên chẳng có gì để tắt và marker không đổi gì về chuyện compile được. Việc nó làm thay vào đó là công việc chính trong cả hai trường hợp: **nó ghi lại quyết định của tác giả**, để người đọc API thấy "đã xét, cố ý không Sendable" thay vì một sự im lặng có thể mang nghĩa bất kỳ, và nó giữ cho tác giả tự do thêm nội bộ không-Sendable trong phiên bản tương lai, vì không client nào từng được phép phụ thuộc vào việc kiểu này vượt ranh giới. Với mảnh này, hệ thống bao trọn cả ba câu trả lời khả dĩ: chứng minh lời tuyên bố (`Sendable`), tự ký chịu trách nhiệm (`@unchecked Sendable`), hoặc từ chối tường minh (`~Sendable`). Không ai còn phải đoán sự im lặng nghĩa là gì nữa.
+`~Sendable` nghĩa là: kiểu này đã được xét, và nó *không được* conform. Nó làm gì về mặt cơ chế thì tuỳ nơi kiểu sống, và đây là chỗ phân đôi public/non-public từ Bằng chứng một quay lại. Với một value type **non-public**, `~Sendable` tắt cái conformance tự động (cái mà compiler cấp khi mọi thành viên đều `Sendable`): không có marker thì kiểu sẽ là `Sendable`, có nó thì không. Với một kiểu **public**, như ở đây, cái conformance tự động đó *chưa từng tồn tại*, nên chẳng có gì để tắt và marker không đổi gì về chuyện compile được. Việc nó làm thay vào đó là công việc chính trong cả hai trường hợp: **nó ghi lại quyết định của tác giả**, để người đọc API thấy "đã xét, cố ý không Sendable" thay vì một sự im lặng có thể mang nghĩa bất kỳ, và nó giữ cho tác giả tự do thêm nội bộ không-Sendable trong phiên bản tương lai, vì không client nào từng được phép phụ thuộc vào việc kiểu này vượt ranh giới. Với phần này, hệ thống bao trọn cả ba câu trả lời khả dĩ: chứng minh lời tuyên bố (`Sendable`), tự ký chịu trách nhiệm (`@unchecked Sendable`), hoặc từ chối tường minh (`~Sendable`). Không ai còn phải đoán sự im lặng nghĩa là gì nữa.
 
 **Chốt lại.** Ba ý tưởng xong. Hàm bị cắt thành các chunk mà thread pool nào cũng chạy được. Dữ liệu sống trong các domain, và một job mỗi lúc làm việc bên trong mỗi domain. Giá trị vượt giữa các domain chỉ với bằng chứng rằng việc vượt là an toàn, và compiler là kẻ kiểm tra bằng chứng. Còn một câu hỏi, và nó đã núp ngay trước mắt từ cái `Task { }` đầu tiên xuất hiện trên các trang này: **task chính xác là gì, ai sở hữu nó, chuyện gì xảy ra khi không còn ai cần kết quả của nó nữa, và vì sao chữ "structured" cứ lặp đi lặp lại?** Đó là ý tưởng cuối: **cái cây task**.
 
@@ -586,7 +414,7 @@ func load() async {
 }
 ```
 
-> *Sơ đồ: Con sống bên trong scope của cha. `Task { }` được tạo từ bên trong scope nhưng KHÔNG thuộc cái cây — nó khởi động cây riêng của nó.*
+![Sơ đồ task tree và scope](scope_of_screen.png "Con sống bên trong scope của cha. Task { } được tạo từ bên trong scope nhưng KHÔNG thuộc cái cây — nó khởi động cây riêng của nó.")
 
 Một điều nữa về phiên bản trong-cây, vì biến `user` ở đó không như vẻ ngoài của nó:
 
@@ -742,5 +570,3 @@ Luật đặt-để gói gọn trong hai dòng. `Task { }` thuộc về **rìa c
 Mỗi hệ quả trong bài, cả hai mươi cái, đều là một trong bốn câu này áp dụng vào một tình huống cụ thể. Đó chính là điều mình muốn nói. Nếu một hành vi nào đó của Swift Concurrency với bạn vẫn còn trông tuỳ tiện sau bài này, hãy mang nó xuống phần bình luận: hoặc bốn ý tưởng giải thích được nó, hoặc mình nợ bài viết này một ý tưởng thứ năm.
 
 ---
-
-*Bài viết được dịch và biên soạn lại (sát nghĩa) từ bài gốc của **Lev Litvak** — "Swift Concurrency: From Ideas Under the Hood to Practical Consequences" ([LinkedIn](https://www.linkedin.com/pulse/swift-concurrency-from-ideas-under-hood-practical-lev-litvak-l1kze/)). Mọi công lao nội dung thuộc về tác giả gốc; mình chỉ dịch để anh em Việt dễ tiếp cận.*
