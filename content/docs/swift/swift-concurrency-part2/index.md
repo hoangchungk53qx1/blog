@@ -1,6 +1,6 @@
  ---
-title: "Swift Concurrency (Phần 2), From Idea to Real-World Case"
-description: "Swift Concurrency đứng trên đúng 4 ý tưởng. Hiểu chúng rồi thì mọi thứ 'khó hiểu' trở thành hệ quả bạn tự suy ra được."
+title: "Swift Concurrency (Part 2), From Idea to Real-World Case"
+description: "Swift Concurrency is built on exactly four core ideas. Once you understand them, everything that seems “complicated” becomes a consequence you can derive yourself."
 icon: "article"
 date: "2026-08-02T00:30:00+07:00"
 lastmod: "2026-08-02T00:30:00+07:00"
