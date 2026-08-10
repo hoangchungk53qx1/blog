@@ -1,6 +1,6 @@
- ---
+---
 title: "Swift Concurrency (Part 2), From Idea to Real-World Case"
-description: "Swift Concurrency is built on exactly four core ideas. Once you understand them, everything that seems “complicated” becomes a consequence you can derive yourself."
+description: "Swift Concurrency is built on exactly four core ideas"
 icon: "article"
 date: "2026-08-02T00:30:00+07:00"
 lastmod: "2026-08-02T00:30:00+07:00"
