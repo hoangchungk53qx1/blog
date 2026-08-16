@@ -4,7 +4,7 @@ description: "Tiếp nối phần 2 — actor bảo vệ dữ liệu thế nào,
 icon: "article"
 date: "2026-08-09T10:00:00+07:00"
 lastmod: "2026-08-09T10:00:00+07:00"
-draft: true
+draft: false
 toc: true
 weight: 999
 ---

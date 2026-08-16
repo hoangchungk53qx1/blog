@@ -1,12 +1,17 @@
 {{ $dest := .Destination }}
 {{ $text := .PlainText }}
 {{ $url := urls.Parse $dest }}
+{{ $page := .Page }}
 
 {{ $image := newScratch }}
 {{ with $url.Scheme }}
   {{  $image.Set "resource" (resources.GetRemote $dest) }}
 {{ else }}
-  {{  $image.Set "resource" (resources.Get $dest) }}
+  {{ with $page.Resources.GetMatch $dest }}
+    {{  $image.Set "resource" . }}
+  {{ else }}
+    {{  $image.Set "resource" (resources.Get $dest) }}
+  {{ end }}
 {{ end }}
 
 {{ if .Title }}
