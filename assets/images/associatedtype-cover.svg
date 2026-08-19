@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" width="100%" preserveAspectRatio="xMidYMid meet" style="max-width:100%;height:auto;display:block;border-radius:20px" role="img" aria-label="associatedtype trong Swift — SwiftUI">
+  <defs>
+    <linearGradient id="atbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2a1f18"/>
+      <stop offset="1" stop-color="#3e2013"/>
+    </linearGradient>
+    <linearGradient id="atorange" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FF9B4A"/>
+      <stop offset="1" stop-color="#F05138"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="420" rx="24" fill="url(#atbg)"/>
+
+  <!-- decorative dashed threads -->
+  <g stroke="#F05138" stroke-opacity="0.12" stroke-width="3" stroke-dasharray="14 20">
+    <line x1="0" y1="70" x2="1200" y2="70"/>
+    <line x1="0" y1="350" x2="1200" y2="350"/>
+  </g>
+
+  <!-- left column -->
+  <text x="64" y="122" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="25" font-weight="700" fill="#FFB98A" letter-spacing="3">SWIFT · SWIFTUI</text>
+  <text x="60" y="212" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="74" font-weight="800" fill="url(#atorange)">associatedtype</text>
+  <text x="64" y="264" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="26" fill="#EAD9CC">Một "chỗ trống kiểu" — type nào conform thì tự điền.</text>
+
+  <text x="64" y="320" font-family="SF Mono,Menlo,monospace" font-size="24" fill="#8FE3A0">some View</text>
+  <text x="196" y="320" font-family="-apple-system,sans-serif" font-size="24" fill="#c9b8ab">(giữ kiểu)</text>
+  <text x="330" y="320" font-family="-apple-system,sans-serif" font-size="24" fill="#6b5a4d">·</text>
+  <text x="356" y="320" font-family="SF Mono,Menlo,monospace" font-size="24" fill="#FF8A8A">any View</text>
+  <text x="474" y="320" font-family="-apple-system,sans-serif" font-size="24" fill="#c9b8ab">(hộp mờ)</text>
+
+  <!-- right: code card -->
+  <g transform="translate(762,96)">
+    <rect width="378" height="228" rx="16" fill="#151013" stroke="#F05138" stroke-opacity="0.28" stroke-width="2"/>
+    <circle cx="28" cy="30" r="6" fill="#ff5f56"/>
+    <circle cx="50" cy="30" r="6" fill="#ffbd2e"/>
+    <circle cx="72" cy="30" r="6" fill="#27c93f"/>
+    <text x="28" y="92" font-family="SF Mono,Menlo,monospace" font-size="22"><tspan fill="#c678dd">protocol</tspan><tspan fill="#e0c9a6"> </tspan><tspan fill="#61afef">Container</tspan><tspan fill="#e0c9a6"> {</tspan></text>
+    <text x="54" y="126" font-family="SF Mono,Menlo,monospace" font-size="22"><tspan fill="#c678dd">associatedtype</tspan><tspan fill="#e0c9a6"> </tspan><tspan fill="#e5c07b">Item</tspan></text>
+    <text x="28" y="160" font-family="SF Mono,Menlo,monospace" font-size="22" fill="#e0c9a6">}</text>
+    <text x="28" y="204" font-family="SF Mono,Menlo,monospace" font-size="18" fill="#7f8c9a">IntBox → Item = Int</text>
+  </g>
+</svg>

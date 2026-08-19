@@ -13,6 +13,8 @@ weight: 999
 
 # associatedtype trong Swift: hiểu để hết sợ lỗi SwiftUI
 
+![associatedtype trong Swift](images/associatedtype-cover.svg)
+
 Anh em làm SwiftUI chắc ai cũng từng ăn cái lỗi này ít nhất một lần:
 
 ```
