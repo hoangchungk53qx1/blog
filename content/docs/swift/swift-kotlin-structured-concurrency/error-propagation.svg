@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 740" width="100%" preserveAspectRatio="xMidYMid meet" style="max-width:100%;height:auto;display:block;border-radius:20px" role="img" aria-label="So sánh lan truyền lỗi giữa coroutineScope, task group và supervisor">
+<defs>
+<linearGradient id="errorpropagationbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1d1822"/><stop offset="1" stop-color="#2a1f2b"/></linearGradient>
+<linearGradient id="errorpropagationsw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FF9B4A"/><stop offset="1" stop-color="#F05138"/></linearGradient>
+<linearGradient id="errorpropagationkt" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C9A0FF"/><stop offset="1" stop-color="#7F52FF"/></linearGradient>
+<marker id="errorpropagationarr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#cfc3b8"/></marker>
+</defs>
+<rect width="1200" height="740" rx="24" fill="url(#errorpropagationbg)"/>
+<text x="60" y="70" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="30" font-weight="800" fill="#e8dccf" text-anchor="start" >Một child task lỗi thì các sibling ra sao?</text>
+<text x="60" y="104" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="20" font-weight="400" fill="#a99a8e" text-anchor="start" >Hai child task: A throw ở t=1, B cần chạy tới t=3. Trục ngang là thời gian.</text>
+<line x1="380" y1="138" x2="1090" y2="138" stroke="#6f6470" stroke-width="1.5" stroke-opacity="1" marker-end="url(#errorpropagationarr)"/>
+<text x="380" y="128" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="14" font-weight="400" fill="#a99a8e" text-anchor="start" >t=0</text>
+<text x="580" y="128" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="14" font-weight="400" fill="#a99a8e" text-anchor="start" >t=1</text>
+<text x="780" y="128" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="14" font-weight="400" fill="#a99a8e" text-anchor="start" >t=2</text>
+<text x="980" y="128" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="14" font-weight="400" fill="#a99a8e" text-anchor="start" >t=3</text>
+<line x1="580" y1="140" x2="580" y2="690" stroke="#FF7A7A" stroke-opacity="0.35" stroke-dasharray="4 6"/>
+<text x="60" y="186" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="700" fill="#CDB6FF" text-anchor="start" letter-spacing="2">KOTLIN · coroutineScope</text>
+<text x="60" y="220" font-family="SF Mono,Menlo,Consolas,monospace" font-size="19" font-weight="700" fill="#CDB6FF" text-anchor="start" >A</text>
+<text x="60" y="244" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="400" fill="#a99a8e" text-anchor="start" ></text>
+<line x1="380" y1="216" x2="580" y2="216" stroke="#FF7A7A" stroke-width="5" stroke-opacity="1"/>
+<text x="590" y="222" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="600" fill="#FF7A7A" text-anchor="start" >✕ throw</text>
+<text x="60" y="252" font-family="SF Mono,Menlo,Consolas,monospace" font-size="19" font-weight="700" fill="#CDB6FF" text-anchor="start" >B</text>
+<text x="60" y="276" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="400" fill="#a99a8e" text-anchor="start" ></text>
+<line x1="380" y1="248" x2="580" y2="248" stroke="#6f6470" stroke-width="5" stroke-opacity="1" stroke-dasharray="6 6"/>
+<text x="590" y="254" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="600" fill="#6f6470" text-anchor="start" >bị cancel ngay</text>
+<text x="60" y="280" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="400" fill="#a99a8e" text-anchor="start" >fail-fast: error được đẩy lên parent ngay tại t=1</text>
+<text x="60" y="330" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="700" fill="#FFB98A" text-anchor="start" letter-spacing="2">SWIFT · withThrowingTaskGroup</text>
+<text x="60" y="364" font-family="SF Mono,Menlo,Consolas,monospace" font-size="19" font-weight="700" fill="#FFB98A" text-anchor="start" >A</text>
+<text x="60" y="388" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="400" fill="#a99a8e" text-anchor="start" ></text>
+<line x1="380" y1="360" x2="580" y2="360" stroke="#FF7A7A" stroke-width="5" stroke-opacity="1"/>
+<text x="590" y="366" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="600" fill="#FF7A7A" text-anchor="start" >✕ error được giữ trong group</text>
+<text x="60" y="396" font-family="SF Mono,Menlo,Consolas,monospace" font-size="19" font-weight="700" fill="#FFB98A" text-anchor="start" >B</text>
+<text x="60" y="420" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="400" fill="#a99a8e" text-anchor="start" ></text>
+<line x1="380" y1="392" x2="780" y2="392" stroke="#8FE3A0" stroke-width="5" stroke-opacity="1"/>
+<text x="790" y="398" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="600" fill="#8FE3A0" text-anchor="start" >vẫn chạy… tới khi body next()</text>
+<text x="60" y="424" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="400" fill="#a99a8e" text-anchor="start" >error chỉ được throw khi body đọc tới kết quả của A (next / for try await); trước đó B vẫn chạy</text>
+<text x="60" y="446" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="400" fill="#FFD479" text-anchor="start" >body không đọc kết quả? group vẫn chờ mọi child xong, và error của A bị bỏ qua</text>
+<text x="60" y="496" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="700" fill="#FFB98A" text-anchor="start" letter-spacing="2">SWIFT 5.9+ · withThrowingDiscardingTaskGroup</text>
+<text x="60" y="530" font-family="SF Mono,Menlo,Consolas,monospace" font-size="19" font-weight="700" fill="#FFB98A" text-anchor="start" >A</text>
+<text x="60" y="554" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="400" fill="#a99a8e" text-anchor="start" ></text>
+<line x1="380" y1="526" x2="580" y2="526" stroke="#FF7A7A" stroke-width="5" stroke-opacity="1"/>
+<text x="590" y="532" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="600" fill="#FF7A7A" text-anchor="start" >✕ throw</text>
+<text x="60" y="562" font-family="SF Mono,Menlo,Consolas,monospace" font-size="19" font-weight="700" fill="#FFB98A" text-anchor="start" >B</text>
+<text x="60" y="586" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="400" fill="#a99a8e" text-anchor="start" ></text>
+<line x1="380" y1="558" x2="580" y2="558" stroke="#6f6470" stroke-width="5" stroke-opacity="1" stroke-dasharray="6 6"/>
+<text x="590" y="564" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="600" fill="#6f6470" text-anchor="start" >bị cancel ngay</text>
+<text x="60" y="590" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="400" fill="#a99a8e" text-anchor="start" >gần coroutineScope nhất: child throw ⇒ cancel group, throw error ra ngoài</text>
+<text x="60" y="640" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="700" fill="#8FE3A0" text-anchor="start" letter-spacing="2">KOTLIN supervisorScope · SWIFT TaskGroup&lt;Result&lt;…&gt;&gt;</text>
+<text x="60" y="674" font-family="SF Mono,Menlo,Consolas,monospace" font-size="19" font-weight="700" fill="#8FE3A0" text-anchor="start" >A</text>
+<text x="60" y="698" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="400" fill="#a99a8e" text-anchor="start" ></text>
+<line x1="380" y1="670" x2="580" y2="670" stroke="#FF7A7A" stroke-width="5" stroke-opacity="1"/>
+<text x="590" y="676" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="600" fill="#FF7A7A" text-anchor="start" >✕ tự xử lý error</text>
+<text x="60" y="706" font-family="SF Mono,Menlo,Consolas,monospace" font-size="19" font-weight="700" fill="#8FE3A0" text-anchor="start" >B</text>
+<text x="60" y="730" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="400" fill="#a99a8e" text-anchor="start" ></text>
+<line x1="380" y1="702" x2="980" y2="702" stroke="#8FE3A0" stroke-width="5" stroke-opacity="1"/>
+<text x="990" y="708" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="600" fill="#8FE3A0" text-anchor="start" >✓ chạy tới xong</text>
+</svg>

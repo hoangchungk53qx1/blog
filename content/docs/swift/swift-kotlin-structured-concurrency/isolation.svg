@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 636" width="100%" preserveAspectRatio="xMidYMid meet" style="max-width:100%;height:auto;display:block;border-radius:20px" role="img" aria-label="Actor và Mutex, MainActor và Dispatchers.Main">
+<defs>
+<linearGradient id="isolationbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1d1822"/><stop offset="1" stop-color="#2a1f2b"/></linearGradient>
+<linearGradient id="isolationsw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FF9B4A"/><stop offset="1" stop-color="#F05138"/></linearGradient>
+<linearGradient id="isolationkt" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C9A0FF"/><stop offset="1" stop-color="#7F52FF"/></linearGradient>
+<marker id="isolationarr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#cfc3b8"/></marker>
+</defs>
+<rect width="1200" height="636" rx="24" fill="url(#isolationbg)"/>
+<text x="60" y="70" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="30" font-weight="800" fill="#e8dccf" text-anchor="start" >Ai bảo vệ shared state: compiler hay chính bạn?</text>
+<text x="60" y="104" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="20" font-weight="400" fill="#a99a8e" text-anchor="start" >Structured concurrency quản lý lifecycle, còn shared state là chuyện khác.</text>
+<g transform="translate(60,132)">
+<rect width="525" height="300" rx="16" fill="#141117" stroke="#F05138" stroke-opacity="0.45" stroke-width="2"/>
+<circle cx="26" cy="28" r="6" fill="#ff5f56"/>
+<circle cx="46" cy="28" r="6" fill="#ffbd2e"/>
+<circle cx="66" cy="28" r="6" fill="#27c93f"/>
+<text x="503" y="34" text-anchor="end" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="17" font-weight="700" fill="#F05138" letter-spacing="2">SWIFT · actor</text>
+<text x="26" y="66" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#c678dd">actor</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e5c07b">CartStore</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">{</tspan></text>
+<text x="26" y="93" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">  </tspan><tspan fill="#c678dd">var</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">items</tspan><tspan fill="#e0d4c4">:</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">[</tspan><tspan fill="#e5c07b">Item</tspan><tspan fill="#e0d4c4">]</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">=</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">[</tspan><tspan fill="#e0d4c4">]</tspan></text>
+<text x="26" y="120" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"></text>
+<text x="26" y="147" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">  </tspan><tspan fill="#c678dd">func</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#61afef">add</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">_</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">item</tspan><tspan fill="#e0d4c4">:</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e5c07b">Item</tspan><tspan fill="#e0d4c4">)</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">{</tspan></text>
+<text x="26" y="174" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">    </tspan><tspan fill="#e0d4c4">items</tspan><tspan fill="#e0d4c4">.</tspan><tspan fill="#61afef">append</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">item</tspan><tspan fill="#e0d4c4">)</tspan></text>
+<text x="26" y="201" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">  </tspan><tspan fill="#e0d4c4">}</tspan></text>
+<text x="26" y="228" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">}</tspan></text>
+<rect x="8" y="238" width="509" height="25" rx="6" fill="#FF7A7A" fill-opacity="0.13"/>
+<rect x="8" y="238" width="4" height="25" rx="2" fill="#FF7A7A"/>
+<text x="26" y="255" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">store</tspan><tspan fill="#e0d4c4">.</tspan><tspan fill="#e0d4c4">items</tspan><tspan fill="#e0d4c4">.</tspan><tspan fill="#61afef">append</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">x</tspan><tspan fill="#e0d4c4">)</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#7f8c9a">// ✕ compile error</tspan></text>
+</g>
+<g transform="translate(615,132)">
+<rect width="525" height="300" rx="16" fill="#141117" stroke="#A97BFF" stroke-opacity="0.45" stroke-width="2"/>
+<circle cx="26" cy="28" r="6" fill="#ff5f56"/>
+<circle cx="46" cy="28" r="6" fill="#ffbd2e"/>
+<circle cx="66" cy="28" r="6" fill="#27c93f"/>
+<text x="503" y="34" text-anchor="end" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="17" font-weight="700" fill="#A97BFF" letter-spacing="2">KOTLIN · Mutex</text>
+<text x="26" y="66" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#c678dd">class</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e5c07b">CartStore</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">{</tspan></text>
+<text x="26" y="93" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">  </tspan><tspan fill="#c678dd">private</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#c678dd">val</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">mutex</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">=</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e5c07b">Mutex</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">)</tspan></text>
+<text x="26" y="120" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">  </tspan><tspan fill="#c678dd">private</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#c678dd">val</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">items</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">=</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">mutableListOf</tspan><tspan fill="#e0d4c4">&lt;</tspan><tspan fill="#e5c07b">Item</tspan><tspan fill="#e0d4c4">&gt;</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">)</tspan></text>
+<text x="26" y="147" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">  </tspan><tspan fill="#c678dd">suspend</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#c678dd">fun</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#61afef">add</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">item</tspan><tspan fill="#e0d4c4">:</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e5c07b">Item</tspan><tspan fill="#e0d4c4">)</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">=</tspan></text>
+<text x="26" y="174" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">    </tspan><tspan fill="#e0d4c4">mutex</tspan><tspan fill="#e0d4c4">.</tspan><tspan fill="#e0d4c4">withLock</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">{</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">items</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">+</tspan><tspan fill="#e0d4c4">=</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">item</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">}</tspan></text>
+<rect x="8" y="184" width="509" height="25" rx="6" fill="#FFD479" fill-opacity="0.13"/>
+<rect x="8" y="184" width="4" height="25" rx="2" fill="#FFD479"/>
+<text x="26" y="201" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">  </tspan><tspan fill="#c678dd">fun</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#61afef">clear</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">)</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">=</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">items</tspan><tspan fill="#e0d4c4">.</tspan><tspan fill="#61afef">clear</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">)</tspan></text>
+<text x="26" y="228" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">}</tspan></text>
+<text x="26" y="255" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#7f8c9a">// ↑ quên lock: compiler không báo gì</tspan></text>
+</g>
+<rect x="60" y="456" width="525" height="150" rx="12" fill="#ffffff" fill-opacity="0.03" stroke="#F05138" stroke-width="2" stroke-opacity="0.4"/>
+<text x="84" y="492" font-family="SF Mono,Menlo,Consolas,monospace" font-size="20" font-weight="700" fill="#56b6c2" text-anchor="start" >@MainActor</text>
+<text x="84" y="522" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="17" font-weight="400" fill="#e8dccf" text-anchor="start" >isolation domain do compiler kiểm tra:</text>
+<text x="84" y="548" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="17" font-weight="400" fill="#e8dccf" text-anchor="start" >truy cập từ bên ngoài phải await.</text>
+<text x="84" y="580" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="17" font-weight="600" fill="#8FE3A0" text-anchor="start" >+ Sendable kiểm tra dữ liệu qua ranh giới domain</text>
+<rect x="615" y="456" width="525" height="150" rx="12" fill="#ffffff" fill-opacity="0.03" stroke="#A97BFF" stroke-width="2" stroke-opacity="0.4"/>
+<text x="639" y="492" font-family="SF Mono,Menlo,Consolas,monospace" font-size="20" font-weight="700" fill="#e5c07b" text-anchor="start" >Dispatchers.Main</text>
+<text x="639" y="522" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="17" font-weight="400" fill="#e8dccf" text-anchor="start" >chỉ quyết định code chạy ở đâu, không ngăn</text>
+<text x="639" y="548" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="17" font-weight="400" fill="#e8dccf" text-anchor="start" >code khác truy cập object từ thread khác.</text>
+<text x="639" y="580" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="17" font-weight="600" fill="#FFD479" text-anchor="start" >an toàn dữ liệu = immutable + quy ước</text>
+</svg>
