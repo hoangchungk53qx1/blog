@@ -59,7 +59,7 @@ suspend fun loadFeed(): Feed {
 
 ![await trong Swift và suspend trong Kotlin](await-vs-suspend.svg "Cùng một logic, cùng hai suspension point. Swift bắt buộc ghi `await` ở từng chỗ, còn Kotlin để thông tin đó trong signature của hàm được gọi.")
 
-Bên dưới, hai bên làm cùng một việc: compiler tách hàm tại các suspension point, lưu state vào một **continuation** trên heap, rồi trả thread lại để làm việc khác. Mình đã phân tích phía Kotlin trong bài [Suspend Function trung tâm trong Coroutine](../../kotlin/suspend-compiler/) và phía Swift trong [Swift Concurrency phần 2](../swift-concurrency-part2/). Đọc cả hai sẽ thấy state machine của Kotlin và cách Swift chia hàm thành các đoạn nối bằng continuation gần như giống hệt nhau.
+Bên dưới, hai bên làm cùng một việc: compiler tách hàm tại các suspension point, lưu state vào một **continuation** trên heap, rồi trả thread lại để làm việc khác. Mình đã phân tích phía Kotlin trong bài [Suspend Function trung tâm trong Coroutine](../../kotlin/suspend-compiler/) và phía Swift trong [Swift Concurrency phần 2](../../swift/swift-concurrency-part2/). Đọc cả hai sẽ thấy state machine của Kotlin và cách Swift chia hàm thành các đoạn nối bằng continuation gần như giống hệt nhau.
 
 Khác biệt nằm ở **chỗ suspension point được thể hiện trong code**:
 
@@ -546,7 +546,7 @@ func decode(_ data: Data) async throws -> [Post] {
 }
 ```
 
-Không có `Dispatchers.IO` là điểm mà dev Android hay gặp vấn đề khi chuyển sang Swift. Cooperative thread pool chỉ có khoảng một thread cho mỗi core, nên nếu block nó bằng I/O đồng bộ thì cả app sẽ bị treo (mình đã giải thích chi tiết ở [phần 2](../swift-concurrency-part2/)). Với những việc thực sự blocking, hãy chạy trên một `DispatchQueue` riêng rồi wrap lại bằng continuation.
+Không có `Dispatchers.IO` là điểm mà dev Android hay gặp vấn đề khi chuyển sang Swift. Cooperative thread pool chỉ có khoảng một thread cho mỗi core, nên nếu block nó bằng I/O đồng bộ thì cả app sẽ bị treo (mình đã giải thích chi tiết ở [phần 2](../../swift/swift-concurrency-part2/)). Với những việc thực sự blocking, hãy chạy trên một `DispatchQueue` riêng rồi wrap lại bằng continuation.
 
 Swift còn có **task priority**, với cơ chế kế thừa và priority escalation: nếu một task priority cao đang chờ một task priority thấp, task priority thấp sẽ được nâng lên. Kotlin không có khái niệm này. Chọn dispatcher hay giới hạn parallelism chỉ thay đổi *tài nguyên thực thi*, không thay đổi *độ ưu tiên* của task.
 

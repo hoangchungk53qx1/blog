@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 556" width="100%" preserveAspectRatio="xMidYMid meet" style="max-width:100%;height:auto;display:block;border-radius:20px" role="img" aria-label="await in Swift and suspend in Kotlin">
+<defs>
+<linearGradient id="awaitvssuspendbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1d1822"/><stop offset="1" stop-color="#2a1f2b"/></linearGradient>
+<linearGradient id="awaitvssuspendsw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FF9B4A"/><stop offset="1" stop-color="#F05138"/></linearGradient>
+<linearGradient id="awaitvssuspendkt" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C9A0FF"/><stop offset="1" stop-color="#7F52FF"/></linearGradient>
+<marker id="awaitvssuspendarr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#cfc3b8"/></marker>
+</defs>
+<rect width="1200" height="556" rx="24" fill="url(#awaitvssuspendbg)"/>
+<text x="60" y="70" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="30" font-weight="800" fill="#e8dccf" text-anchor="start" >Suspension points: explicit in Swift, in the signature in Kotlin</text>
+<text x="60" y="106" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="20" font-weight="400" fill="#a99a8e" text-anchor="start" >Same logic. Highlighted lines are where the function may suspend and release the thread.</text>
+<g transform="translate(60,136)">
+<rect width="525" height="330" rx="16" fill="#141117" stroke="#F05138" stroke-opacity="0.45" stroke-width="2"/>
+<circle cx="26" cy="28" r="6" fill="#ff5f56"/>
+<circle cx="46" cy="28" r="6" fill="#ffbd2e"/>
+<circle cx="66" cy="28" r="6" fill="#27c93f"/>
+<text x="503" y="34" text-anchor="end" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="17" font-weight="700" fill="#F05138" letter-spacing="2">SWIFT</text>
+<text x="26" y="66" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#c678dd">func</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#61afef">loadFeed</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">)</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#c678dd">async</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#c678dd">throws</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">-</tspan><tspan fill="#e0d4c4">&gt;</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e5c07b">Feed</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">{</tspan></text>
+<text x="26" y="93" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">  </tspan><tspan fill="#c678dd">let</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">token</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">=</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">session</tspan><tspan fill="#e0d4c4">.</tspan><tspan fill="#e0d4c4">token</tspan></text>
+<rect x="8" y="103" width="509" height="25" rx="6" fill="#F05138" fill-opacity="0.13"/>
+<rect x="8" y="103" width="4" height="25" rx="2" fill="#F05138"/>
+<text x="507" y="120" text-anchor="end" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="600" fill="#F05138">await</text>
+<text x="26" y="120" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">  </tspan><tspan fill="#c678dd">let</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">user</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">=</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#c678dd">try</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#c678dd">await</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">api</tspan><tspan fill="#e0d4c4">.</tspan><tspan fill="#61afef">user</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">token</tspan><tspan fill="#e0d4c4">)</tspan></text>
+<rect x="8" y="130" width="509" height="25" rx="6" fill="#F05138" fill-opacity="0.13"/>
+<rect x="8" y="130" width="4" height="25" rx="2" fill="#F05138"/>
+<text x="507" y="147" text-anchor="end" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="600" fill="#F05138">await</text>
+<text x="26" y="147" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">  </tspan><tspan fill="#c678dd">let</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">posts</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">=</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#c678dd">try</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#c678dd">await</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">api</tspan><tspan fill="#e0d4c4">.</tspan><tspan fill="#61afef">posts</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">user</tspan><tspan fill="#e0d4c4">)</tspan></text>
+<text x="26" y="174" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">  </tspan><tspan fill="#c678dd">return</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e5c07b">Feed</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">user</tspan><tspan fill="#e0d4c4">,</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">posts</tspan><tspan fill="#e0d4c4">.</tspan><tspan fill="#61afef">sorted</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">)</tspan><tspan fill="#e0d4c4">)</tspan></text>
+<text x="26" y="201" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">}</tspan></text>
+<text x="26" y="228" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"></text>
+<text x="26" y="255" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#7f8c9a">// await = “may suspend here”</tspan></text>
+</g>
+<g transform="translate(615,136)">
+<rect width="525" height="330" rx="16" fill="#141117" stroke="#A97BFF" stroke-opacity="0.45" stroke-width="2"/>
+<circle cx="26" cy="28" r="6" fill="#ff5f56"/>
+<circle cx="46" cy="28" r="6" fill="#ffbd2e"/>
+<circle cx="66" cy="28" r="6" fill="#27c93f"/>
+<text x="503" y="34" text-anchor="end" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="17" font-weight="700" fill="#A97BFF" letter-spacing="2">KOTLIN</text>
+<text x="26" y="66" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#c678dd">suspend</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#c678dd">fun</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#61afef">loadFeed</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">)</tspan><tspan fill="#e0d4c4">:</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e5c07b">Feed</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">{</tspan></text>
+<text x="26" y="93" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">  </tspan><tspan fill="#c678dd">val</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">token</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">=</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">session</tspan><tspan fill="#e0d4c4">.</tspan><tspan fill="#e0d4c4">token</tspan></text>
+<rect x="8" y="103" width="509" height="25" rx="6" fill="#A97BFF" fill-opacity="0.13"/>
+<rect x="8" y="103" width="4" height="25" rx="2" fill="#A97BFF"/>
+<text x="507" y="120" text-anchor="end" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="600" fill="#A97BFF">suspend?</text>
+<text x="26" y="120" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">  </tspan><tspan fill="#c678dd">val</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">user</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">=</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">api</tspan><tspan fill="#e0d4c4">.</tspan><tspan fill="#61afef">user</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">token</tspan><tspan fill="#e0d4c4">)</tspan></text>
+<rect x="8" y="130" width="509" height="25" rx="6" fill="#A97BFF" fill-opacity="0.13"/>
+<rect x="8" y="130" width="4" height="25" rx="2" fill="#A97BFF"/>
+<text x="507" y="147" text-anchor="end" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="600" fill="#A97BFF">suspend?</text>
+<text x="26" y="147" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">  </tspan><tspan fill="#c678dd">val</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">posts</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">=</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">api</tspan><tspan fill="#e0d4c4">.</tspan><tspan fill="#61afef">posts</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">user</tspan><tspan fill="#e0d4c4">)</tspan></text>
+<text x="26" y="174" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">  </tspan><tspan fill="#c678dd">return</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e5c07b">Feed</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">user</tspan><tspan fill="#e0d4c4">,</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">posts</tspan><tspan fill="#e0d4c4">.</tspan><tspan fill="#61afef">sorted</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">)</tspan><tspan fill="#e0d4c4">)</tspan></text>
+<text x="26" y="201" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#e0d4c4">}</tspan></text>
+<text x="26" y="228" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"></text>
+<text x="26" y="255" font-family="SF Mono,Menlo,Consolas,monospace" font-size="18" xml:space="preserve"><tspan fill="#7f8c9a">// no keyword at the call site</tspan></text>
+</g>
+<text x="322" y="500" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="19" font-weight="600" fill="#FFB98A" text-anchor="middle" >The compiler requires await at each point</text>
+<text x="877" y="500" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="19" font-weight="600" fill="#CDB6FF" text-anchor="middle" >You must know api.user(...) is a suspend fun</text>
+<text x="877" y="526" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="17" font-weight="400" fill="#a99a8e" text-anchor="middle" >(Android Studio shows a gutter icon)</text>
+</svg>

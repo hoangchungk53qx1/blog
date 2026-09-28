@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" width="100%" preserveAspectRatio="xMidYMid meet" style="max-width:100%;height:auto;display:block;border-radius:20px" role="img" aria-label="Bridging callbacks to async in Swift and Kotlin">
+<defs>
+<linearGradient id="continuationbridgebg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1d1822"/><stop offset="1" stop-color="#2a1f2b"/></linearGradient>
+<linearGradient id="continuationbridgesw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FF9B4A"/><stop offset="1" stop-color="#F05138"/></linearGradient>
+<linearGradient id="continuationbridgekt" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C9A0FF"/><stop offset="1" stop-color="#7F52FF"/></linearGradient>
+<marker id="continuationbridgearr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#cfc3b8"/></marker>
+</defs>
+<rect width="1200" height="620" rx="24" fill="url(#continuationbridgebg)"/>
+<text x="60" y="70" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="30" font-weight="800" fill="#e8dccf" text-anchor="start" >Wrapping callbacks: resume exactly once, pass cancellation</text>
+<text x="60" y="104" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="20" font-weight="400" fill="#a99a8e" text-anchor="start" >Wrapping is not enough: when the task is cancelled, the underlying request must be too.</text>
+<g transform="translate(60,132)">
+<rect width="600" height="400" rx="16" fill="#141117" stroke="#F05138" stroke-opacity="0.45" stroke-width="2"/>
+<circle cx="26" cy="28" r="6" fill="#ff5f56"/>
+<circle cx="46" cy="28" r="6" fill="#ffbd2e"/>
+<circle cx="66" cy="28" r="6" fill="#27c93f"/>
+<text x="578" y="34" text-anchor="end" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="17" font-weight="700" fill="#F05138" letter-spacing="2">SWIFT</text>
+<text x="26" y="66" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#c678dd">func</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#61afef">fetch</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">)</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#c678dd">async</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#c678dd">throws</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">-</tspan><tspan fill="#e0d4c4">&gt;</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e5c07b">Data</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">{</tspan></text>
+<text x="26" y="90" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#e0d4c4">  </tspan><tspan fill="#c678dd">let</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">req</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">=</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e5c07b">LegacyRequest</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">)</tspan></text>
+<text x="26" y="114" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#e0d4c4">  </tspan><tspan fill="#c678dd">return</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#c678dd">try</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#c678dd">await</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">withTaskCancellationHandler</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">{</tspan></text>
+<text x="26" y="138" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#e0d4c4">    </tspan><tspan fill="#c678dd">try</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#c678dd">await</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">withCheckedThrowingContinuation</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">{</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">c</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#c678dd">in</tspan></text>
+<text x="26" y="162" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#e0d4c4">      </tspan><tspan fill="#e0d4c4">req</tspan><tspan fill="#e0d4c4">.</tspan><tspan fill="#e0d4c4">start</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">{</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">result</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#c678dd">in</tspan></text>
+<rect x="8" y="171" width="584" height="22" rx="6" fill="#8FE3A0" fill-opacity="0.13"/>
+<rect x="8" y="171" width="4" height="22" rx="2" fill="#8FE3A0"/>
+<text x="26" y="186" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#e0d4c4">        </tspan><tspan fill="#e0d4c4">c</tspan><tspan fill="#e0d4c4">.</tspan><tspan fill="#61afef">resume</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">with</tspan><tspan fill="#e0d4c4">:</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">result</tspan><tspan fill="#e0d4c4">)</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#7f8c9a">// only once</tspan></text>
+<text x="26" y="210" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#e0d4c4">      </tspan><tspan fill="#e0d4c4">}</tspan></text>
+<text x="26" y="234" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#e0d4c4">    </tspan><tspan fill="#e0d4c4">}</tspan></text>
+<text x="26" y="258" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#e0d4c4">  </tspan><tspan fill="#e0d4c4">}</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">onCancel</tspan><tspan fill="#e0d4c4">:</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">{</tspan></text>
+<rect x="8" y="267" width="584" height="22" rx="6" fill="#F05138" fill-opacity="0.13"/>
+<rect x="8" y="267" width="4" height="22" rx="2" fill="#F05138"/>
+<text x="26" y="282" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#e0d4c4">    </tspan><tspan fill="#e0d4c4">req</tspan><tspan fill="#e0d4c4">.</tspan><tspan fill="#61afef">cancel</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">)</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#7f8c9a">// callback errors → resume</tspan></text>
+<text x="26" y="306" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#e0d4c4">  </tspan><tspan fill="#e0d4c4">}</tspan></text>
+<text x="26" y="330" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#e0d4c4">}</tspan></text>
+</g>
+<g transform="translate(690,132)">
+<rect width="450" height="400" rx="16" fill="#141117" stroke="#A97BFF" stroke-opacity="0.45" stroke-width="2"/>
+<circle cx="26" cy="28" r="6" fill="#ff5f56"/>
+<circle cx="46" cy="28" r="6" fill="#ffbd2e"/>
+<circle cx="66" cy="28" r="6" fill="#27c93f"/>
+<text x="428" y="34" text-anchor="end" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="17" font-weight="700" fill="#A97BFF" letter-spacing="2">KOTLIN</text>
+<text x="26" y="66" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#c678dd">suspend</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#c678dd">fun</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#61afef">fetch</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">)</tspan><tspan fill="#e0d4c4">:</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e5c07b">Data</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">=</tspan></text>
+<text x="26" y="90" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#e0d4c4">  </tspan><tspan fill="#e0d4c4">suspendCancellableCoroutine</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">{</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">cont</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">-</tspan><tspan fill="#e0d4c4">&gt;</tspan></text>
+<text x="26" y="114" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#e0d4c4">    </tspan><tspan fill="#c678dd">val</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">req</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">=</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e5c07b">LegacyRequest</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">)</tspan></text>
+<text x="26" y="138" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#e0d4c4">    </tspan><tspan fill="#e0d4c4">req</tspan><tspan fill="#e0d4c4">.</tspan><tspan fill="#e0d4c4">start</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">{</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">result</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">-</tspan><tspan fill="#e0d4c4">&gt;</tspan></text>
+<rect x="8" y="147" width="434" height="22" rx="6" fill="#8FE3A0" fill-opacity="0.13"/>
+<rect x="8" y="147" width="4" height="22" rx="2" fill="#8FE3A0"/>
+<text x="26" y="162" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#e0d4c4">      </tspan><tspan fill="#e0d4c4">cont</tspan><tspan fill="#e0d4c4">.</tspan><tspan fill="#61afef">resumeWith</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">result</tspan><tspan fill="#e0d4c4">)</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#7f8c9a">// once</tspan></text>
+<text x="26" y="186" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#e0d4c4">    </tspan><tspan fill="#e0d4c4">}</tspan></text>
+<rect x="8" y="195" width="434" height="22" rx="6" fill="#A97BFF" fill-opacity="0.13"/>
+<rect x="8" y="195" width="4" height="22" rx="2" fill="#A97BFF"/>
+<text x="26" y="210" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#e0d4c4">    </tspan><tspan fill="#e0d4c4">cont</tspan><tspan fill="#e0d4c4">.</tspan><tspan fill="#e0d4c4">invokeOnCancellation</tspan><tspan fill="#e0d4c4"> </tspan><tspan fill="#e0d4c4">{</tspan></text>
+<rect x="8" y="219" width="434" height="22" rx="6" fill="#A97BFF" fill-opacity="0.13"/>
+<rect x="8" y="219" width="4" height="22" rx="2" fill="#A97BFF"/>
+<text x="26" y="234" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#e0d4c4">      </tspan><tspan fill="#e0d4c4">req</tspan><tspan fill="#e0d4c4">.</tspan><tspan fill="#61afef">cancel</tspan><tspan fill="#e0d4c4">(</tspan><tspan fill="#e0d4c4">)</tspan></text>
+<text x="26" y="258" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#e0d4c4">    </tspan><tspan fill="#e0d4c4">}</tspan></text>
+<text x="26" y="282" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#e0d4c4">  </tspan><tspan fill="#e0d4c4">}</tspan></text>
+<text x="26" y="306" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"></text>
+<text x="26" y="330" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#7f8c9a">// cancel ⇒ cont resumes</tspan></text>
+<text x="26" y="354" font-family="SF Mono,Menlo,Consolas,monospace" font-size="16" xml:space="preserve"><tspan fill="#7f8c9a">// with CancellationException</tspan></text>
+</g>
+<text x="360" y="566" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="17" font-weight="600" fill="#FFB98A" text-anchor="middle" >The continuation does not resume on cancel:</text>
+<text x="360" y="590" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="17" font-weight="600" fill="#FFB98A" text-anchor="middle" >the old API must call back (usually with an error)</text>
+<text x="915" y="566" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="17" font-weight="600" fill="#CDB6FF" text-anchor="middle" >The continuation resumes itself on cancel;</text>
+<text x="915" y="590" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="17" font-weight="600" fill="#CDB6FF" text-anchor="middle" >later resume calls are ignored</text>
+</svg>
