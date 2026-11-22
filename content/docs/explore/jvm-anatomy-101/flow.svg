@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" width="100%" preserveAspectRatio="xMidYMid meet" style="max-width:100%;height:auto;display:block;border-radius:20px" role="img" aria-label="Một file .class đi qua những gì">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1c1a2b"/><stop offset="1" stop-color="#2b1f33"/></linearGradient>
+<marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#cbd5e1"/></marker></defs>
+<rect width="1200" height="420" rx="24" fill="url(#bg)"/>
+<g font-family="-apple-system,Segoe UI,system-ui,sans-serif" text-anchor="middle">
+<text x="600" y="48" font-size="22" font-weight="700" fill="#FCD34D">Một file .class đi qua những gì</text>
+<g fill="#0f172a" stroke="#F472B6" stroke-width="2"><rect x="40" y="90" width="190" height="110" rx="14"/><rect x="262" y="90" width="190" height="110" rx="14"/><rect x="484" y="90" width="190" height="110" rx="14"/><rect x="706" y="90" width="190" height="110" rx="14"/><rect x="928" y="90" width="232" height="110" rx="14"/></g>
+<g fill="#f1f5f9" font-size="19" font-weight="700"><text x="135" y="125">Class loading</text><text x="357" y="125">Linking</text><text x="579" y="125">Execution</text><text x="801" y="125">Threads + Heap</text><text x="1044" y="125">Monitoring</text></g>
+<g fill="#a8b3c7" font-size="15"><text x="135" y="155">nạp bytecode,</text><text x="135" y="178">verify, prepare</text><text x="357" y="155">interpreter, JIT,</text><text x="357" y="178">AOT</text><text x="579" y="155">thread, JMM,</text><text x="579" y="178">happens-before</text><text x="801" y="155">allocation, GC</text><text x="801" y="178">GC Roots</text><text x="1044" y="155">JVMTI, JMX,</text><text x="1044" y="178">JConsole</text></g>
+<g stroke="#cbd5e1" stroke-width="2.5" marker-end="url(#ar)"><line x1="232" y1="145" x2="258" y2="145"/><line x1="454" y1="145" x2="480" y2="145"/><line x1="676" y1="145" x2="702" y2="145"/><line x1="898" y1="145" x2="924" y2="145"/></g>
+<rect x="40" y="250" width="1120" height="64" rx="14" fill="#0f172a" stroke="#7DD3FC" stroke-width="2"/>
+<text x="600" y="278" font-size="18" font-weight="700" fill="#7DD3FC">Runtime services: memory management, GC, thread scheduling, reflection, exception handling</text>
+<text x="600" y="302" font-size="15" fill="#a8b3c7">AOT cũng vẫn cần những dịch vụ này</text>
+<text x="600" y="368" font-size="16" fill="#94a3b8">Initialization (clinit) chạy ở first active use</text>
+</g></svg>
