@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 524" width="100%" preserveAspectRatio="xMidYMid meet" style="max-width:100%;height:auto;display:block;border-radius:20px" role="img" aria-label="Backend Architecture: 6 bước từ một server đơn lên hệ thống scalable">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14202b"/><stop offset="1" stop-color="#1d2a3a"/></linearGradient>
+<linearGradient id="hl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5EEAD4"/><stop offset="1" stop-color="#38BDF8"/></linearGradient>
+</defs>
+<rect width="1200" height="524" rx="24" fill="url(#bg)"/>
+<text x="64" y="118" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="22" font-weight="700" fill="#7DD3FC" letter-spacing="3">FUNDAMENTALS OF BACKEND ARCHITECTURE</text>
+<text x="60" y="190" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="58" font-weight="800" fill="url(#hl)">Từ một server đơn</text>
+<text x="60" y="262" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="58" font-weight="800" fill="#f1f5f9">lên hệ thống scalable</text>
+<g font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="20" font-weight="600" text-anchor="middle">
+<g fill="#0f172a" stroke="#38BDF8" stroke-width="2">
+<rect x="64" y="340" width="160" height="64" rx="14"/><rect x="244" y="340" width="160" height="64" rx="14"/><rect x="424" y="340" width="160" height="64" rx="14"/><rect x="604" y="340" width="160" height="64" rx="14"/><rect x="784" y="340" width="160" height="64" rx="14"/><rect x="964" y="340" width="160" height="64" rx="14"/>
+</g>
+<g fill="#e2e8f0"><text x="144" y="379">Database</text><text x="324" y="379">LB + Scale</text><text x="504" y="379">Gateway</text><text x="684" y="379">Direct Upload</text><text x="864" y="379">Event Broker</text><text x="1044" y="379">Cache + CDN</text></g>
+<g fill="#5EEAD4" font-size="16"><text x="144" y="330">1</text><text x="324" y="330">2</text><text x="504" y="330">3</text><text x="684" y="330">4</text><text x="864" y="330">5</text><text x="1044" y="330">6</text></g>
+</g>
+<text x="64" y="470" font-family="-apple-system,Segoe UI,system-ui,sans-serif" font-size="20" fill="#94a3b8">Mỗi bước giải quyết một giới hạn cụ thể, và mang theo một đánh đổi.</text>
+</svg>
